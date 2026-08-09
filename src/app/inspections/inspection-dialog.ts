@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
 import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Inspection } from './inspections';
@@ -33,7 +34,8 @@ export interface InspectionDialogData {
     MatButtonModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatIconModule
+    MatIconModule,
+    MatDividerModule
   ],
   providers: [DatePipe],
   template: `
