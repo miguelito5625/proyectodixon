@@ -11,7 +11,8 @@ import { SupabaseService } from '../supabase.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { InspectionDialog } from './inspection-dialog';
+import { InspectionDialog, InspectionDialogData } from './inspection-dialog';
+import { CatalogItem } from '../settings/catalog-dialog';
 
 export interface Inspection {
   id: number;
@@ -20,6 +21,14 @@ export interface Inspection {
   comments: string;
   scheduled_date: string;
   executed_date: string;
+  area_id?: number;
+  level_id?: number;
+  type_id?: number;
+  inspector_id?: number;
+  areas?: { name: string };
+  levels?: { name: string };
+  inspection_types?: { name: string };
+  inspectors?: { name: string };
 }
 
 @Component({
@@ -59,10 +68,21 @@ export interface Inspection {
 
       <table mat-table [dataSource]="dataSource" matSort>
 
+        <ng-container matColumnDef="area">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Área / Nivel </th>
+          <td mat-cell *matCellDef="let row"> 
+            {{ row.areas?.name || 'N/A' }} <br>
+            <small>{{ row.levels?.name || '' }}</small>
+          </td>
+        </ng-container>
+
         <!-- Element Column -->
         <ng-container matColumnDef="element">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Elemento </th>
-          <td mat-cell *matCellDef="let row"> {{row.element}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Elemento / Tipo </th>
+          <td mat-cell *matCellDef="let row"> 
+            <strong>{{row.element}}</strong> <br>
+            <small>{{ row.inspection_types?.name || '' }}</small>
+          </td>
         </ng-container>
 
         <!-- Status Column -->
@@ -87,10 +107,20 @@ export interface Inspection {
           <td mat-cell *matCellDef="let row"> {{row.executed_date || '--'}} </td>
         </ng-container>
 
-        <!-- Comments Column -->
-        <ng-container matColumnDef="comments">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Comentarios </th>
-          <td mat-cell *matCellDef="let row"> {{row.comments || ''}} </td>
+        <!-- Inspector Column -->
+        <ng-container matColumnDef="inspector">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Inspector </th>
+          <td mat-cell *matCellDef="let row"> {{row.inspectors?.name || '--'}} </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Acciones </th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button (click)="openDialog(row)">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -98,7 +128,7 @@ export interface Inspection {
 
         <!-- Row shown when there is no matching data. -->
         <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="5">No hay datos que coincidan con "{{input.value}}"</td>
+          <td class="mat-cell" colspan="7">No hay datos que coincidan con "{{input.value}}"</td>
         </tr>
       </table>
 
@@ -154,9 +184,23 @@ export interface Inspection {
   `]
 })
 export class Inspections implements OnInit {
-  displayedColumns: string[] = ['element', 'status', 'scheduled_date', 'executed_date', 'comments'];
+  displayedColumns: string[] = [
+    'element',
+    'area',
+    'status', 
+    'scheduled_date', 
+    'executed_date', 
+    'inspector',
+    'actions'
+  ];
   dataSource: MatTableDataSource<Inspection>;
   isLoading = signal(true);
+
+  // Catalogs
+  areas: CatalogItem[] = [];
+  levels: CatalogItem[] = [];
+  inspectionTypes: CatalogItem[] = [];
+  inspectors: CatalogItem[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -168,8 +212,26 @@ export class Inspections implements OnInit {
     this.dataSource = new MatTableDataSource();
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.loadCatalogs();
     this.loadData();
+  }
+
+  async loadCatalogs() {
+    try {
+      const [areasRes, levelsRes, typesRes, inspectorsRes] = await Promise.all([
+        this.supabase.client.from('areas').select('*'),
+        this.supabase.client.from('levels').select('*'),
+        this.supabase.client.from('inspection_types').select('*'),
+        this.supabase.client.from('inspectors').select('*')
+      ]);
+      this.areas = areasRes.data as CatalogItem[] || [];
+      this.levels = levelsRes.data as CatalogItem[] || [];
+      this.inspectionTypes = typesRes.data as CatalogItem[] || [];
+      this.inspectors = inspectorsRes.data as CatalogItem[] || [];
+    } catch (e) {
+      console.error('Error loading catalogs:', e);
+    }
   }
 
   async loadData() {
@@ -177,7 +239,13 @@ export class Inspections implements OnInit {
     try {
       const { data, error } = await this.supabase.client
         .from('inspections')
-        .select('*')
+        .select(`
+          *,
+          areas(name),
+          levels(name),
+          inspection_types(name),
+          inspectors(name)
+        `)
         .order('id', { ascending: false });
 
       if (error) throw error;
@@ -213,8 +281,14 @@ export class Inspections implements OnInit {
 
   openDialog(inspection?: Inspection) {
     const dialogRef = this.dialog.open(InspectionDialog, {
-      width: '500px',
-      data: inspection || null
+      width: '600px',
+      data: {
+        inspection: inspection || null,
+        areas: this.areas,
+        levels: this.levels,
+        inspectionTypes: this.inspectionTypes,
+        inspectors: this.inspectors
+      } as InspectionDialogData
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {

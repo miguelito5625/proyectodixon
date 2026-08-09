@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
@@ -20,7 +21,8 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     MatButtonModule,
     MatIconModule,
     MatSidenavModule,
-    MatListModule
+    MatListModule,
+    MatDividerModule
   ],
   template: `
     <mat-sidenav-container class="sidenav-container">
@@ -31,21 +33,55 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
         </div>
         
         <mat-nav-list>
+          <div mat-subheader>Principal</div>
           <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
             <mat-icon matListItemIcon>dashboard</mat-icon>
             <span matListItemTitle>Dashboard</span>
           </a>
+
+          <mat-divider></mat-divider>
+          <div mat-subheader>Operación</div>
           <a mat-list-item routerLink="/inspections" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
             <mat-icon matListItemIcon>fact_check</mat-icon>
             <span matListItemTitle>Inspecciones</span>
           </a>
+          <a mat-list-item routerLink="/issues" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+            <mat-icon matListItemIcon>report_problem</mat-icon>
+            <span matListItemTitle>Pendientes</span>
+          </a>
+          <a mat-list-item routerLink="/material-log" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+            <mat-icon matListItemIcon>inventory_2</mat-icon>
+            <span matListItemTitle>Materiales</span>
+          </a>
+          <a mat-list-item routerLink="/incentives" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+            <mat-icon matListItemIcon>payments</mat-icon>
+            <span matListItemTitle>Incentivos</span>
+          </a>
+
+          <mat-divider></mat-divider>
+          <div mat-subheader>Técnico</div>
           <a mat-list-item routerLink="/pi-log" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
             <mat-icon matListItemIcon>verified</mat-icon>
             <span matListItemTitle>Pruebas por Zona</span>
           </a>
-          <a mat-list-item routerLink="/material-log" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
-            <mat-icon matListItemIcon>inventory_2</mat-icon>
-            <span matListItemTitle>Material Log</span>
+          <a mat-list-item routerLink="/trips" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+            <mat-icon matListItemIcon>speed</mat-icon>
+            <span matListItemTitle>Trips</span>
+          </a>
+          <a mat-list-item routerLink="/valves" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+            <mat-icon matListItemIcon>water_drop</mat-icon>
+            <span matListItemTitle>Válvulas</span>
+          </a>
+          <a mat-list-item routerLink="/electrical" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+            <mat-icon matListItemIcon>bolt</mat-icon>
+            <span matListItemTitle>Eléctrico</span>
+          </a>
+
+          <mat-divider></mat-divider>
+          <div mat-subheader>Administración</div>
+          <a mat-list-item routerLink="/settings" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+            <mat-icon matListItemIcon>settings</mat-icon>
+            <span matListItemTitle>Configuración</span>
           </a>
         </mat-nav-list>
       </mat-sidenav>
