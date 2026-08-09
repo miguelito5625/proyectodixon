@@ -1,0 +1,180 @@
+import { Component, inject, Renderer2, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSidenavModule,
+    MatListModule
+  ],
+  template: `
+    <mat-sidenav-container class="sidenav-container">
+      <mat-sidenav #sidenav [mode]="isHandset() ? 'over' : 'side'" [opened]="!isHandset()">
+        <div class="sidenav-header">
+          <mat-icon>local_fire_department</mat-icon>
+          <h2>FireSafety Ops</h2>
+        </div>
+        
+        <mat-nav-list>
+          <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+            <mat-icon matListItemIcon>dashboard</mat-icon>
+            <span matListItemTitle>Dashboard</span>
+          </a>
+          <a mat-list-item routerLink="/inspections" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+            <mat-icon matListItemIcon>fact_check</mat-icon>
+            <span matListItemTitle>Inspecciones</span>
+          </a>
+          <a mat-list-item routerLink="/pi-log" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+            <mat-icon matListItemIcon>verified</mat-icon>
+            <span matListItemTitle>Pruebas por Zona</span>
+          </a>
+          <a mat-list-item routerLink="/material-log" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+            <mat-icon matListItemIcon>inventory_2</mat-icon>
+            <span matListItemTitle>Material Log</span>
+          </a>
+        </mat-nav-list>
+      </mat-sidenav>
+
+      <mat-sidenav-content>
+        <mat-toolbar color="primary">
+          <button
+            type="button"
+            aria-label="Toggle sidenav"
+            mat-icon-button
+            (click)="sidenav.toggle()"
+            *ngIf="isHandset()">
+            <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+          </button>
+          <span *ngIf="isHandset()">FireSafety Ops</span>
+          <span class="spacer"></span>
+          
+          <!-- Animated Dark/Light Mode Toggle -->
+          <button mat-icon-button (click)="toggleTheme()" aria-label="Toggle theme">
+            <mat-icon class="theme-icon" [class.rotated]="isDarkMode()">
+              {{ isDarkMode() ? 'dark_mode' : 'light_mode' }}
+            </mat-icon>
+          </button>
+        </mat-toolbar>
+
+        <div class="container">
+          <router-outlet></router-outlet>
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  `,
+  styles: [`
+    .sidenav-container {
+      height: 100vh;
+      background-color: var(--mat-sys-background);
+    }
+    
+    .sidenav-header {
+      padding: 24px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--mat-sys-primary);
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+    }
+    
+    .sidenav-header mat-icon {
+      transform: scale(1.5);
+      margin-left: 8px;
+    }
+
+    .sidenav-header h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    mat-sidenav {
+      width: 250px;
+      border-right: 1px solid var(--mat-sys-outline-variant);
+    }
+
+    mat-sidenav .mat-divider {
+      margin: 0;
+    }
+
+    .active-link {
+      background-color: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container) !important;
+      font-weight: 500;
+    }
+    
+    .active-link mat-icon {
+      color: var(--mat-sys-primary);
+    }
+
+    .spacer {
+      flex: 1 1 auto;
+    }
+
+    .container {
+      padding: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Animation for theme icon */
+    .theme-icon {
+      transition: transform 0.5s ease-in-out, opacity 0.3s ease;
+    }
+    
+    .theme-icon.rotated {
+      transform: rotate(360deg);
+    }
+  `]
+})
+export class App {
+  private breakpointObserver = inject(BreakpointObserver);
+  private renderer = inject(Renderer2);
+  
+  isHandset = signal(false);
+  isDarkMode = signal(false);
+
+  constructor() {
+    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
+      this.isHandset.set(result.matches);
+    });
+    
+    // Check initial system preference or localStorage if needed
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (prefersDark) {
+      this.toggleTheme(true);
+    }
+  }
+
+  closeIfHandset(sidenav: any) {
+    if (this.isHandset()) {
+      sidenav.close();
+    }
+  }
+
+  toggleTheme(forceDark?: boolean) {
+    const newState = forceDark !== undefined ? forceDark : !this.isDarkMode();
+    this.isDarkMode.set(newState);
+    
+    if (newState) {
+      this.renderer.addClass(document.body, 'dark-theme');
+    } else {
+      this.renderer.removeClass(document.body, 'dark-theme');
+    }
+  }
+}
