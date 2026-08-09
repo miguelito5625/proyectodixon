@@ -37,14 +37,14 @@ export class Login {
   async onLogin() {
     this.errorMessage.set('');
     if (!this.username || !this.password) {
-      this.errorMessage.set('Por favor ingresa usuario y contraseña');
+      this.errorMessage.set('Por favor ingresa usuario o correo y contraseña');
       return;
     }
 
     this.loading.set(true);
     
-    // Construct email from username for Supabase (as requested)
-    const email = `${this.username}@dixon.com`;
+    // Si el usuario escribió un correo, lo usamos. Si no, le añadimos @gmail.com
+    const email = this.username.includes('@') ? this.username : `${this.username}@gmail.com`;
 
     const { error } = await this.supabase.signIn(email, this.password);
     
