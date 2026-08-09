@@ -212,6 +212,10 @@ export class Dashboard implements OnInit {
   public pieChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 1500,
+      easing: 'easeOutQuart'
+    },
     plugins: {
       legend: { position: 'right' }
     }
@@ -230,6 +234,10 @@ export class Dashboard implements OnInit {
   public barChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 1500,
+      easing: 'easeOutQuart'
+    },
     scales: {
       y: { beginAtZero: true, max: 5 } // 5 tests max
     },
