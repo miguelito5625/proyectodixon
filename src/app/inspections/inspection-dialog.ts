@@ -90,13 +90,13 @@ export interface InspectionDialogData {
         <div class="row">
           <mat-form-field appearance="outline" class="flex-fill">
             <mat-label>Fecha Programada</mat-label>
-            <input matInput [matDatepicker]="pickerProg" formControlName="scheduled_date" readonly>
+            <input matInput [matDatepicker]="pickerProg" formControlName="scheduled_date" readonly (click)="pickerProg.open()">
             <mat-datepicker-toggle matIconSuffix [for]="pickerProg"></mat-datepicker-toggle>
             <mat-datepicker #pickerProg></mat-datepicker>
           </mat-form-field>
           <mat-form-field appearance="outline" class="flex-fill">
             <mat-label>Fecha Ejecutada</mat-label>
-            <input matInput [matDatepicker]="pickerEjec" formControlName="executed_date" readonly>
+            <input matInput [matDatepicker]="pickerEjec" formControlName="executed_date" readonly (click)="pickerEjec.open()">
             <mat-datepicker-toggle matIconSuffix [for]="pickerEjec"></mat-datepicker-toggle>
             <mat-datepicker #pickerEjec></mat-datepicker>
           </mat-form-field>
