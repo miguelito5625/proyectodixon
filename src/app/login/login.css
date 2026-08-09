@@ -1,0 +1,99 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--mat-sys-surface);
+}
+
+.login-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at top left, var(--mat-sys-primary-container) 0%, transparent 40%),
+              radial-gradient(circle at bottom right, var(--mat-sys-tertiary-container) 0%, transparent 40%);
+  opacity: 0.5;
+  z-index: 0;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  z-index: 1;
+  padding: 32px 24px;
+  border-radius: 24px;
+  background: var(--mat-sys-surface);
+}
+
+.login-header {
+  margin-bottom: 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-icon {
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header-icon mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+mat-card-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--mat-sys-on-surface);
+}
+
+mat-card-subtitle {
+  font-size: 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.login-button {
+  height: 48px;
+  border-radius: 24px;
+  font-size: 16px;
+  margin-top: 16px;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mat-sys-error);
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.error-message mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}

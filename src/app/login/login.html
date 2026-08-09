@@ -1,0 +1,60 @@
+<div class="login-container">
+  <div class="login-background"></div>
+  
+  <mat-card class="login-card mat-elevation-z8">
+    <mat-card-header class="login-header">
+      <div mat-card-avatar class="header-icon">
+        <mat-icon>local_fire_department</mat-icon>
+      </div>
+      <mat-card-title>FireSafety Ops</mat-card-title>
+      <mat-card-subtitle>Ingresa a tu cuenta</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Usuario</mat-label>
+          <input matInput 
+                 name="username" 
+                 [(ngModel)]="username" 
+                 required 
+                 autocomplete="username"
+                 [disabled]="loading()">
+          <mat-icon matPrefix>person</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input matInput 
+                 type="password" 
+                 name="password" 
+                 [(ngModel)]="password" 
+                 required 
+                 autocomplete="current-password"
+                 [disabled]="loading()">
+          <mat-icon matPrefix>lock</mat-icon>
+        </mat-form-field>
+
+        @if(errorMessage()) {
+          <div class="error-message">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <button mat-flat-button 
+                color="primary" 
+                class="login-button full-width" 
+                type="submit" 
+                [disabled]="!loginForm.form.valid || loading()">
+          @if(loading()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            Ingresar
+          }
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

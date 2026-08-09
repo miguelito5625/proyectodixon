@@ -1,6 +1,6 @@
 import { Component, inject, Renderer2, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { SupabaseService } from './supabase.service';
 
 @Component({
   selector: 'app-root',
@@ -27,111 +28,121 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     MatExpansionModule
   ],
   template: `
-    <mat-sidenav-container class="sidenav-container">
-      <mat-sidenav #sidenav mode="over" opened="false">
-        <div class="sidenav-header">
-          <mat-icon>local_fire_department</mat-icon>
-          <h2>FireSafety Ops</h2>
-        </div>
-        
-        <mat-nav-list>
-          <div mat-subheader>Principal</div>
-          <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" (click)="sidenav.close()">
-            <mat-icon matListItemIcon>dashboard</mat-icon>
-            <span matListItemTitle>Dashboard</span>
-          </a>
-
-          <mat-divider></mat-divider>
-          <div mat-subheader>Operación</div>
-          <a mat-list-item routerLink="/inspections" routerLinkActive="active-link" (click)="sidenav.close()">
-            <mat-icon matListItemIcon>fact_check</mat-icon>
-            <span matListItemTitle>Inspecciones</span>
-          </a>
-          <a mat-list-item routerLink="/issues" routerLinkActive="active-link" (click)="sidenav.close()">
-            <mat-icon matListItemIcon>report_problem</mat-icon>
-            <span matListItemTitle>Pendientes</span>
-          </a>
-          <a mat-list-item routerLink="/material-log" routerLinkActive="active-link" (click)="sidenav.close()">
-            <mat-icon matListItemIcon>inventory_2</mat-icon>
-            <span matListItemTitle>Materiales</span>
-          </a>
-          <a mat-list-item routerLink="/incentives" routerLinkActive="active-link" (click)="sidenav.close()">
-            <mat-icon matListItemIcon>payments</mat-icon>
-            <span matListItemTitle>Incentivos</span>
-          </a>
-
-          <mat-divider></mat-divider>
-          <div mat-subheader>Técnico</div>
-          <a mat-list-item routerLink="/pi-log" routerLinkActive="active-link" (click)="sidenav.close()">
-            <mat-icon matListItemIcon>verified</mat-icon>
-            <span matListItemTitle>Pruebas por Zona</span>
-          </a>
-          <a mat-list-item routerLink="/trips" routerLinkActive="active-link" (click)="sidenav.close()">
-            <mat-icon matListItemIcon>speed</mat-icon>
-            <span matListItemTitle>Trips</span>
-          </a>
-          <a mat-list-item routerLink="/valves" routerLinkActive="active-link" (click)="sidenav.close()">
-            <mat-icon matListItemIcon>water_drop</mat-icon>
-            <span matListItemTitle>Válvulas</span>
-          </a>
-          <a mat-list-item routerLink="/electrical" routerLinkActive="active-link" (click)="sidenav.close()">
-            <mat-icon matListItemIcon>bolt</mat-icon>
-            <span matListItemTitle>Eléctrico</span>
-          </a>
-
-          <mat-divider></mat-divider>
-          <div mat-subheader>Administración</div>
-          <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
-            <mat-expansion-panel-header>
-              <mat-panel-title style="display: flex; align-items: center; gap: 16px;">
-                <mat-icon style="color: var(--mat-sys-on-surface-variant);">settings</mat-icon>
-                <span style="color: var(--mat-sys-on-surface);">Catálogos</span>
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-            
-            <mat-nav-list style="padding-top: 0;">
-              <a mat-list-item routerLink="/settings" [queryParams]="{tab: '0'}" routerLinkActive="active-link" (click)="sidenav.close()">
-                <span matListItemTitle style="padding-left: 40px;">Áreas</span>
-              </a>
-              <a mat-list-item routerLink="/settings" [queryParams]="{tab: '1'}" routerLinkActive="active-link" (click)="sidenav.close()">
-                <span matListItemTitle style="padding-left: 40px;">Niveles</span>
-              </a>
-              <a mat-list-item routerLink="/settings" [queryParams]="{tab: '2'}" routerLinkActive="active-link" (click)="sidenav.close()">
-                <span matListItemTitle style="padding-left: 40px;">Tipos de Inspección</span>
-              </a>
-              <a mat-list-item routerLink="/settings" [queryParams]="{tab: '3'}" routerLinkActive="active-link" (click)="sidenav.close()">
-                <span matListItemTitle style="padding-left: 40px;">Inspectores</span>
-              </a>
-            </mat-nav-list>
-          </mat-expansion-panel>
-        </mat-nav-list>
-      </mat-sidenav>
-
-      <mat-sidenav-content>
-        <mat-toolbar color="primary">
-          <button
-            type="button"
-            aria-label="Toggle sidenav"
-            mat-icon-button
-            (click)="sidenav.toggle()">
-            <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-          </button>
-          <span>FireSafety Ops</span>
-          <span class="spacer"></span>
+    @if(supabase.session()) {
+      <mat-sidenav-container class="sidenav-container">
+        <mat-sidenav #sidenav mode="over" opened="false">
+          <div class="sidenav-header">
+            <mat-icon>local_fire_department</mat-icon>
+            <h2>FireSafety Ops</h2>
+          </div>
           
-          <!-- Animated Dark/Light Mode Toggle -->
-          <button mat-icon-button (click)="toggleTheme()" aria-label="Toggle theme">
-            <mat-icon class="theme-icon" [class.rotated]="isDarkMode()">
-              {{ isDarkMode() ? 'dark_mode' : 'light_mode' }}
-            </mat-icon>
-          </button>
-        </mat-toolbar>
+          <mat-nav-list>
+            <div mat-subheader>Principal</div>
+            <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>dashboard</mat-icon>
+              <span matListItemTitle>Dashboard</span>
+            </a>
 
-        <div class="container">
-          <router-outlet></router-outlet>
-        </div>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
+            <mat-divider></mat-divider>
+            <div mat-subheader>Operación</div>
+            <a mat-list-item routerLink="/inspections" routerLinkActive="active-link" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>fact_check</mat-icon>
+              <span matListItemTitle>Inspecciones</span>
+            </a>
+            <a mat-list-item routerLink="/issues" routerLinkActive="active-link" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>report_problem</mat-icon>
+              <span matListItemTitle>Pendientes</span>
+            </a>
+            <a mat-list-item routerLink="/material-log" routerLinkActive="active-link" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>inventory_2</mat-icon>
+              <span matListItemTitle>Materiales</span>
+            </a>
+            <a mat-list-item routerLink="/incentives" routerLinkActive="active-link" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>payments</mat-icon>
+              <span matListItemTitle>Incentivos</span>
+            </a>
+
+            <mat-divider></mat-divider>
+            <div mat-subheader>Técnico</div>
+            <a mat-list-item routerLink="/pi-log" routerLinkActive="active-link" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>verified</mat-icon>
+              <span matListItemTitle>Pruebas por Zona</span>
+            </a>
+            <a mat-list-item routerLink="/trips" routerLinkActive="active-link" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>speed</mat-icon>
+              <span matListItemTitle>Trips</span>
+            </a>
+            <a mat-list-item routerLink="/valves" routerLinkActive="active-link" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>water_drop</mat-icon>
+              <span matListItemTitle>Válvulas</span>
+            </a>
+            <a mat-list-item routerLink="/electrical" routerLinkActive="active-link" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>bolt</mat-icon>
+              <span matListItemTitle>Eléctrico</span>
+            </a>
+
+            <mat-divider></mat-divider>
+            <div mat-subheader>Administración</div>
+            <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
+              <mat-expansion-panel-header>
+                <mat-panel-title style="display: flex; align-items: center; gap: 16px;">
+                  <mat-icon style="color: var(--mat-sys-on-surface-variant);">settings</mat-icon>
+                  <span style="color: var(--mat-sys-on-surface);">Catálogos</span>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              
+              <mat-nav-list style="padding-top: 0;">
+                <a mat-list-item routerLink="/settings" [queryParams]="{tab: '0'}" routerLinkActive="active-link" (click)="sidenav.close()">
+                  <span matListItemTitle style="padding-left: 40px;">Áreas</span>
+                </a>
+                <a mat-list-item routerLink="/settings" [queryParams]="{tab: '1'}" routerLinkActive="active-link" (click)="sidenav.close()">
+                  <span matListItemTitle style="padding-left: 40px;">Niveles</span>
+                </a>
+                <a mat-list-item routerLink="/settings" [queryParams]="{tab: '2'}" routerLinkActive="active-link" (click)="sidenav.close()">
+                  <span matListItemTitle style="padding-left: 40px;">Tipos de Inspección</span>
+                </a>
+                <a mat-list-item routerLink="/settings" [queryParams]="{tab: '3'}" routerLinkActive="active-link" (click)="sidenav.close()">
+                  <span matListItemTitle style="padding-left: 40px;">Inspectores</span>
+                </a>
+              </mat-nav-list>
+            </mat-expansion-panel>
+          </mat-nav-list>
+        </mat-sidenav>
+
+        <mat-sidenav-content>
+          <mat-toolbar color="primary">
+            <button
+              type="button"
+              aria-label="Toggle sidenav"
+              mat-icon-button
+              (click)="sidenav.toggle()">
+              <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+            </button>
+            <span>FireSafety Ops</span>
+            <span class="spacer"></span>
+            
+            <!-- Animated Dark/Light Mode Toggle -->
+            <button mat-icon-button (click)="toggleTheme()" aria-label="Toggle theme">
+              <mat-icon class="theme-icon" [class.rotated]="isDarkMode()">
+                {{ isDarkMode() ? 'dark_mode' : 'light_mode' }}
+              </mat-icon>
+            </button>
+
+            <!-- Sign Out Button -->
+            <button mat-icon-button (click)="signOut()" aria-label="Cerrar Sesión">
+              <mat-icon>logout</mat-icon>
+            </button>
+          </mat-toolbar>
+
+          <div class="container">
+            <router-outlet></router-outlet>
+          </div>
+        </mat-sidenav-content>
+      </mat-sidenav-container>
+    } @else {
+      <!-- Blank layout for login -->
+      <router-outlet></router-outlet>
+    }
   `,
   styles: [`
     .sidenav-container {
@@ -209,6 +220,8 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 export class App {
   private breakpointObserver = inject(BreakpointObserver);
   private renderer = inject(Renderer2);
+  private router = inject(Router);
+  public supabase = inject(SupabaseService);
   
   isHandset = signal(false);
   isDarkMode = signal(false);
@@ -240,5 +253,10 @@ export class App {
     } else {
       this.renderer.removeClass(document.body, 'dark-theme');
     }
+  }
+
+  async signOut() {
+    await this.supabase.signOut();
+    this.router.navigate(['/login']);
   }
 }
