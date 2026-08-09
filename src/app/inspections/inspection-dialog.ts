@@ -46,45 +46,42 @@ export interface InspectionDialogData {
             <mat-label>Elemento</mat-label>
             <input matInput formControlName="element" required>
           </mat-form-field>
-          <div class="field-with-action flex-fill">
-            <mat-form-field appearance="outline">
-              <mat-label>Tipo</mat-label>
-              <mat-select formControlName="type_id">
-                <mat-option [value]="null">-- Ninguno --</mat-option>
-                <mat-option *ngFor="let t of data.inspectionTypes" [value]="t.id">{{ t.name }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <button mat-icon-button color="primary" type="button" (click)="addNewCatalogItem('inspection_types', 'Tipo', 'type_id', data.inspectionTypes)">
-              <mat-icon>add</mat-icon>
-            </button>
-          </div>
+          <mat-form-field appearance="outline" class="flex-fill">
+            <mat-label>Tipo</mat-label>
+            <mat-select formControlName="type_id" (selectionChange)="onSelectChange($event, 'inspection_types', 'Tipo', 'type_id', data.inspectionTypes)">
+              <mat-option [value]="null">-- Ninguno --</mat-option>
+              <mat-option *ngFor="let t of data.inspectionTypes" [value]="t.id">{{ t.name }}</mat-option>
+              <mat-divider></mat-divider>
+              <mat-option value="ADD_NEW" class="add-new-option">
+                <mat-icon color="primary">add</mat-icon> <strong>Añadir Nuevo...</strong>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
 
         <div class="row">
-          <div class="field-with-action flex-fill">
-            <mat-form-field appearance="outline">
-              <mat-label>Área</mat-label>
-              <mat-select formControlName="area_id">
-                <mat-option [value]="null">-- Ninguna --</mat-option>
-                <mat-option *ngFor="let a of data.areas" [value]="a.id">{{ a.name }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <button mat-icon-button color="primary" type="button" (click)="addNewCatalogItem('areas', 'Área', 'area_id', data.areas)">
-              <mat-icon>add</mat-icon>
-            </button>
-          </div>
-          <div class="field-with-action flex-fill">
-            <mat-form-field appearance="outline">
-              <mat-label>Nivel</mat-label>
-              <mat-select formControlName="level_id">
-                <mat-option [value]="null">-- Ninguno --</mat-option>
-                <mat-option *ngFor="let l of data.levels" [value]="l.id">{{ l.name }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <button mat-icon-button color="primary" type="button" (click)="addNewCatalogItem('levels', 'Nivel', 'level_id', data.levels)">
-              <mat-icon>add</mat-icon>
-            </button>
-          </div>
+          <mat-form-field appearance="outline" class="flex-fill">
+            <mat-label>Área</mat-label>
+            <mat-select formControlName="area_id" (selectionChange)="onSelectChange($event, 'areas', 'Área', 'area_id', data.areas)">
+              <mat-option [value]="null">-- Ninguna --</mat-option>
+              <mat-option *ngFor="let a of data.areas" [value]="a.id">{{ a.name }}</mat-option>
+              <mat-divider></mat-divider>
+              <mat-option value="ADD_NEW" class="add-new-option">
+                <mat-icon color="primary">add</mat-icon> <strong>Añadir Nueva...</strong>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="flex-fill">
+            <mat-label>Nivel</mat-label>
+            <mat-select formControlName="level_id" (selectionChange)="onSelectChange($event, 'levels', 'Nivel', 'level_id', data.levels)">
+              <mat-option [value]="null">-- Ninguno --</mat-option>
+              <mat-option *ngFor="let l of data.levels" [value]="l.id">{{ l.name }}</mat-option>
+              <mat-divider></mat-divider>
+              <mat-option value="ADD_NEW" class="add-new-option">
+                <mat-icon color="primary">add</mat-icon> <strong>Añadir Nuevo...</strong>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
 
         <div class="row">
@@ -96,18 +93,17 @@ export interface InspectionDialogData {
               <mat-option value="Rechazado">Rechazado</mat-option>
             </mat-select>
           </mat-form-field>
-          <div class="field-with-action flex-fill">
-            <mat-form-field appearance="outline">
-              <mat-label>Inspector</mat-label>
-              <mat-select formControlName="inspector_id">
-                <mat-option [value]="null">-- Ninguno --</mat-option>
-                <mat-option *ngFor="let i of data.inspectors" [value]="i.id">{{ i.name }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <button mat-icon-button color="primary" type="button" (click)="addNewCatalogItem('inspectors', 'Inspector', 'inspector_id', data.inspectors)">
-              <mat-icon>add</mat-icon>
-            </button>
-          </div>
+          <mat-form-field appearance="outline" class="flex-fill">
+            <mat-label>Inspector</mat-label>
+            <mat-select formControlName="inspector_id" (selectionChange)="onSelectChange($event, 'inspectors', 'Inspector', 'inspector_id', data.inspectors)">
+              <mat-option [value]="null">-- Ninguno --</mat-option>
+              <mat-option *ngFor="let i of data.inspectors" [value]="i.id">{{ i.name }}</mat-option>
+              <mat-divider></mat-divider>
+              <mat-option value="ADD_NEW" class="add-new-option">
+                <mat-icon color="primary">add</mat-icon> <strong>Añadir Nuevo...</strong>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
 
         <div class="row">
@@ -153,13 +149,10 @@ export interface InspectionDialogData {
     .flex-fill {
       flex: 1;
     }
-    .field-with-action {
+    .add-new-option {
       display: flex;
       align-items: center;
-      gap: 4px;
-    }
-    .field-with-action mat-form-field {
-      flex: 1;
+      color: var(--mat-sys-primary);
     }
   `]
 })
@@ -190,6 +183,14 @@ export class InspectionDialog {
       executed_date: [ins?.executed_date ? new Date(ins.executed_date) : null],
       comments: [ins?.comments || '']
     });
+  }
+
+  onSelectChange(event: any, tableName: string, title: string, controlName: string, localArray: CatalogItem[]) {
+    if (event.value === 'ADD_NEW') {
+      // Temporarily revert to null while dialog opens so it doesn't show "ADD_NEW"
+      this.form.get(controlName)?.setValue(null);
+      this.addNewCatalogItem(tableName, title, controlName, localArray);
+    }
   }
 
   addNewCatalogItem(tableName: string, title: string, controlName: string, localArray: CatalogItem[]) {
