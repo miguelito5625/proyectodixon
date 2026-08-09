@@ -4,6 +4,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SupabaseService } from '../supabase.service';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,7 +14,8 @@ import { SupabaseService } from '../supabase.service';
     CommonModule,
     MatCardModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    BaseChartDirective
   ],
   template: `
     <div class="dashboard-header">
@@ -20,8 +23,8 @@ import { SupabaseService } from '../supabase.service';
       <p>Resumen general del estado del proyecto FireSafety Ops</p>
     </div>
 
+    <!-- Metrics Cards -->
     <div class="cards-grid">
-      <!-- Inspections Card -->
       <mat-card class="metric-card">
         <mat-card-header>
           <div mat-card-avatar class="card-icon inspections-icon">
@@ -37,7 +40,6 @@ import { SupabaseService } from '../supabase.service';
         </mat-card-content>
       </mat-card>
 
-      <!-- Materials Card -->
       <mat-card class="metric-card">
         <mat-card-header>
           <div mat-card-avatar class="card-icon materials-icon">
@@ -53,7 +55,6 @@ import { SupabaseService } from '../supabase.service';
         </mat-card-content>
       </mat-card>
       
-      <!-- Pending Inspections Card -->
       <mat-card class="metric-card">
         <mat-card-header>
           <div mat-card-avatar class="card-icon pending-icon">
@@ -68,6 +69,44 @@ import { SupabaseService } from '../supabase.service';
           </div>
         </mat-card-content>
       </mat-card>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+      
+      <!-- Inspections Status Chart -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Estatus de Inspecciones</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container" *ngIf="!isLoadingCharts(); else loading">
+            <canvas baseChart
+              [data]="pieChartData"
+              [type]="pieChartType"
+              [options]="pieChartOptions">
+            </canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- PI LOG Bar Chart -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Avance Pruebas por Zona (PI LOG)</mat-card-title>
+          <mat-card-subtitle>Pasos completados (fechas registradas) por cada zona</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container" *ngIf="!isLoadingCharts(); else loading">
+            <canvas baseChart
+              [data]="barChartData"
+              [type]="barChartType"
+              [options]="barChartOptions">
+            </canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
     </div>
 
     <ng-template #loading>
@@ -95,11 +134,19 @@ import { SupabaseService } from '../supabase.service';
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 24px;
+      margin-bottom: 24px;
     }
 
-    .metric-card {
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 24px;
+    }
+
+    .metric-card, .chart-card {
       padding: 16px;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border-radius: 12px;
     }
     
     .metric-card:hover {
@@ -121,17 +168,9 @@ import { SupabaseService } from '../supabase.service';
       color: white;
     }
 
-    .inspections-icon {
-      background-color: var(--mat-sys-primary);
-    }
-
-    .materials-icon {
-      background-color: var(--mat-sys-tertiary);
-    }
-    
-    .pending-icon {
-      background-color: var(--mat-sys-error);
-    }
+    .inspections-icon { background-color: var(--mat-sys-primary); }
+    .materials-icon { background-color: var(--mat-sys-tertiary); }
+    .pending-icon { background-color: var(--mat-sys-error); }
 
     .metric-value {
       font-size: 3rem;
@@ -144,6 +183,15 @@ import { SupabaseService } from '../supabase.service';
     .spinner-container {
       display: flex;
       justify-content: center;
+      align-items: center;
+      height: 100%;
+      min-height: 200px;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
       margin-top: 16px;
     }
   `]
@@ -157,9 +205,48 @@ export class Dashboard implements OnInit {
   
   isLoadingInspections = signal(true);
   isLoadingMaterials = signal(true);
+  isLoadingCharts = signal(true);
+
+  // --- PIE CHART CONFIG ---
+  public pieChartType: ChartType = 'doughnut';
+  public pieChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'right' }
+    }
+  };
+  public pieChartData: ChartData<'doughnut', number[], string | string[]> = {
+    labels: ['Aprobada', 'Pendiente', 'Rechazada'],
+    datasets: [{
+      data: [0, 0, 0],
+      backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
+      hoverBackgroundColor: ['#66bb6a', '#ffb74d', '#e57373']
+    }]
+  };
+
+  // --- BAR CHART CONFIG ---
+  public barChartType: ChartType = 'bar';
+  public barChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { beginAtZero: true, max: 5 } // 5 tests max
+    },
+    plugins: {
+      legend: { display: false }
+    }
+  };
+  public barChartData: ChartData<'bar'> = {
+    labels: [],
+    datasets: [
+      { data: [], label: 'Pruebas Completadas', backgroundColor: '#3f51b5' }
+    ]
+  };
 
   ngOnInit() {
     this.loadMetrics();
+    this.loadChartData();
   }
 
   async loadMetrics() {
@@ -167,18 +254,12 @@ export class Dashboard implements OnInit {
     this.isLoadingMaterials.set(true);
 
     try {
-      console.log('Fetching inspections count...');
       // Get total inspections
       const { count: insCount, error: insError } = await this.supabase.client
         .from('inspections')
         .select('*', { count: 'exact', head: true });
         
-      if (insError) {
-        console.error('Error in insCount:', insError);
-      } else {
-        console.log('Total inspections:', insCount);
-        this.totalInspections.set(insCount || 0);
-      }
+      if (!insError) this.totalInspections.set(insCount || 0);
 
       // Get pending inspections
       const { count: pendCount, error: pendError } = await this.supabase.client
@@ -186,26 +267,16 @@ export class Dashboard implements OnInit {
         .select('*', { count: 'exact', head: true })
         .eq('status', 'Pendiente');
         
-      if (pendError) {
-        console.error('Error in pendCount:', pendError);
-      } else {
-        this.pendingInspections.set(pendCount || 0);
-      }
+      if (!pendError) this.pendingInspections.set(pendCount || 0);
       
       this.isLoadingInspections.set(false);
 
-      console.log('Fetching materials count...');
       // Get total materials
       const { count: matCount, error: matError } = await this.supabase.client
         .from('materials')
         .select('*', { count: 'exact', head: true });
         
-      if (matError) {
-        console.error('Error in matCount:', matError);
-      } else {
-        console.log('Total materials:', matCount);
-        this.totalMaterials.set(matCount || 0);
-      }
+      if (!matError) this.totalMaterials.set(matCount || 0);
       
       this.isLoadingMaterials.set(false);
       
@@ -213,6 +284,76 @@ export class Dashboard implements OnInit {
       console.error('Exception fetching metrics:', error);
       this.isLoadingInspections.set(false);
       this.isLoadingMaterials.set(false);
+    }
+  }
+
+  async loadChartData() {
+    this.isLoadingCharts.set(true);
+    try {
+      // 1. Fetch Inspections Status
+      const { data: insData, error: insError } = await this.supabase.client
+        .from('inspections')
+        .select('status');
+
+      if (!insError && insData) {
+        let aprobadas = 0;
+        let pendientes = 0;
+        let rechazadas = 0;
+
+        insData.forEach(i => {
+          if (i.status === 'Aprobada') aprobadas++;
+          else if (i.status === 'Rechazada') rechazadas++;
+          else pendientes++;
+        });
+
+        this.pieChartData = {
+          labels: ['Aprobada', 'Pendiente', 'Rechazada'],
+          datasets: [{
+            data: [aprobadas, pendientes, rechazadas],
+            backgroundColor: ['#4caf50', '#ff9800', '#f44336']
+          }]
+        };
+      }
+
+      // 2. Fetch PI LOG (Zone Tests)
+      const { data: piData, error: piError } = await this.supabase.client
+        .from('zone_tests')
+        .select('*')
+        .order('id', { ascending: true })
+        .limit(10); // Show max 10 zones in chart
+
+      if (!piError && piData) {
+        const labels: string[] = [];
+        const testCounts: number[] = [];
+
+        piData.forEach((zone: any) => {
+          labels.push(zone.zone_name || 'Sin Nombre');
+          
+          let completed = 0;
+          if (zone.visual_date) completed++;
+          if (zone.hydro_date) completed++;
+          if (zone.thirty_min_date) completed++;
+          if (zone.twenty_four_air_date) completed++;
+          if (zone.trip_date) completed++;
+
+          testCounts.push(completed);
+        });
+
+        this.barChartData = {
+          labels: labels,
+          datasets: [{ 
+            data: testCounts, 
+            label: 'Pruebas Completadas', 
+            backgroundColor: '#3f51b5',
+            borderRadius: 4
+          }]
+        };
+      }
+
+    } catch (error) {
+      console.error('Exception fetching chart data:', error);
+    } finally {
+      this.isLoadingCharts.set(false);
     }
   }
 }

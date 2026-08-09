@@ -6,6 +6,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { DatePipe } from '@angular/common';
 import { Inspection } from './inspections';
 import { CatalogItem } from '../settings/catalog-dialog';
 
@@ -27,8 +29,10 @@ export interface InspectionDialogData {
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDatepickerModule
   ],
+  providers: [DatePipe],
   template: `
     <h2 mat-dialog-title>{{ isEdit ? 'Editar' : 'Nueva' }} Inspección</h2>
     <mat-dialog-content>
@@ -85,12 +89,16 @@ export interface InspectionDialogData {
 
         <div class="row">
           <mat-form-field appearance="outline" class="flex-fill">
-            <mat-label>Fecha Programada (YYYY-MM-DD)</mat-label>
-            <input matInput formControlName="scheduled_date">
+            <mat-label>Fecha Programada</mat-label>
+            <input matInput [matDatepicker]="pickerProg" formControlName="scheduled_date">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerProg"></mat-datepicker-toggle>
+            <mat-datepicker #pickerProg></mat-datepicker>
           </mat-form-field>
           <mat-form-field appearance="outline" class="flex-fill">
-            <mat-label>Fecha Ejecutada (YYYY-MM-DD)</mat-label>
-            <input matInput formControlName="executed_date">
+            <mat-label>Fecha Ejecutada</mat-label>
+            <input matInput [matDatepicker]="pickerEjec" formControlName="executed_date">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerEjec"></mat-datepicker-toggle>
+            <mat-datepicker #pickerEjec></mat-datepicker>
           </mat-form-field>
         </div>
         
@@ -130,6 +138,7 @@ export class InspectionDialog {
 
   constructor(
     private fb: FormBuilder,
+    private datePipe: DatePipe,
     public dialogRef: MatDialogRef<InspectionDialog>,
     @Inject(MAT_DIALOG_DATA) public data: InspectionDialogData
   ) {
@@ -143,19 +152,29 @@ export class InspectionDialog {
       level_id: [ins?.level_id || null],
       status: [ins?.status || 'Pendiente'],
       inspector_id: [ins?.inspector_id || null],
-      scheduled_date: [ins?.scheduled_date || ''],
-      executed_date: [ins?.executed_date || ''],
+      scheduled_date: [ins?.scheduled_date ? new Date(ins.scheduled_date) : null],
+      executed_date: [ins?.executed_date ? new Date(ins.executed_date) : null],
       comments: [ins?.comments || '']
     });
   }
 
   save() {
     if (this.form.valid) {
-      // Neturalize empty dates to avoid postgres errors if not properly formatted
-      const result = this.form.value;
-      if (!result.scheduled_date) result.scheduled_date = null;
-      if (!result.executed_date) result.executed_date = null;
+      const result = { ...this.form.value };
       
+      // Convert dates to YYYY-MM-DD strings for Supabase
+      if (result.scheduled_date) {
+        result.scheduled_date = this.datePipe.transform(result.scheduled_date, 'yyyy-MM-dd');
+      } else {
+        result.scheduled_date = null;
+      }
+      
+      if (result.executed_date) {
+        result.executed_date = this.datePipe.transform(result.executed_date, 'yyyy-MM-dd');
+      } else {
+        result.executed_date = null;
+      }
+
       this.dialogRef.close(result);
     }
   }
