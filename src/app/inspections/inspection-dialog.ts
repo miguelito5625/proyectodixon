@@ -1,15 +1,17 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DatePipe } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { Inspection } from './inspections';
-import { CatalogItem } from '../settings/catalog-dialog';
+import { CatalogDialog, CatalogDialogData, CatalogItem } from '../settings/catalog-dialog';
+import { SupabaseService } from '../supabase.service';
 
 export interface InspectionDialogData {
   inspection: Inspection | null;
@@ -30,7 +32,8 @@ export interface InspectionDialogData {
     MatInputModule,
     MatButtonModule,
     MatSelectModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatIconModule
   ],
   providers: [DatePipe],
   template: `
@@ -43,30 +46,45 @@ export interface InspectionDialogData {
             <mat-label>Elemento</mat-label>
             <input matInput formControlName="element" required>
           </mat-form-field>
-          <mat-form-field appearance="outline" class="flex-fill">
-            <mat-label>Tipo</mat-label>
-            <mat-select formControlName="type_id">
-              <mat-option [value]="null">-- Ninguno --</mat-option>
-              <mat-option *ngFor="let t of data.inspectionTypes" [value]="t.id">{{ t.name }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+          <div class="field-with-action flex-fill">
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo</mat-label>
+              <mat-select formControlName="type_id">
+                <mat-option [value]="null">-- Ninguno --</mat-option>
+                <mat-option *ngFor="let t of data.inspectionTypes" [value]="t.id">{{ t.name }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-icon-button color="primary" type="button" (click)="addNewCatalogItem('inspection_types', 'Tipo', 'type_id', data.inspectionTypes)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
         </div>
 
         <div class="row">
-          <mat-form-field appearance="outline" class="flex-fill">
-            <mat-label>Área</mat-label>
-            <mat-select formControlName="area_id">
-              <mat-option [value]="null">-- Ninguna --</mat-option>
-              <mat-option *ngFor="let a of data.areas" [value]="a.id">{{ a.name }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="flex-fill">
-            <mat-label>Nivel</mat-label>
-            <mat-select formControlName="level_id">
-              <mat-option [value]="null">-- Ninguno --</mat-option>
-              <mat-option *ngFor="let l of data.levels" [value]="l.id">{{ l.name }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+          <div class="field-with-action flex-fill">
+            <mat-form-field appearance="outline">
+              <mat-label>Área</mat-label>
+              <mat-select formControlName="area_id">
+                <mat-option [value]="null">-- Ninguna --</mat-option>
+                <mat-option *ngFor="let a of data.areas" [value]="a.id">{{ a.name }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-icon-button color="primary" type="button" (click)="addNewCatalogItem('areas', 'Área', 'area_id', data.areas)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+          <div class="field-with-action flex-fill">
+            <mat-form-field appearance="outline">
+              <mat-label>Nivel</mat-label>
+              <mat-select formControlName="level_id">
+                <mat-option [value]="null">-- Ninguno --</mat-option>
+                <mat-option *ngFor="let l of data.levels" [value]="l.id">{{ l.name }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-icon-button color="primary" type="button" (click)="addNewCatalogItem('levels', 'Nivel', 'level_id', data.levels)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
         </div>
 
         <div class="row">
@@ -78,13 +96,18 @@ export interface InspectionDialogData {
               <mat-option value="Rechazado">Rechazado</mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field appearance="outline" class="flex-fill">
-            <mat-label>Inspector</mat-label>
-            <mat-select formControlName="inspector_id">
-              <mat-option [value]="null">-- Ninguno --</mat-option>
-              <mat-option *ngFor="let i of data.inspectors" [value]="i.id">{{ i.name }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+          <div class="field-with-action flex-fill">
+            <mat-form-field appearance="outline">
+              <mat-label>Inspector</mat-label>
+              <mat-select formControlName="inspector_id">
+                <mat-option [value]="null">-- Ninguno --</mat-option>
+                <mat-option *ngFor="let i of data.inspectors" [value]="i.id">{{ i.name }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-icon-button color="primary" type="button" (click)="addNewCatalogItem('inspectors', 'Inspector', 'inspector_id', data.inspectors)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
         </div>
 
         <div class="row">
@@ -130,11 +153,22 @@ export interface InspectionDialogData {
     .flex-fill {
       flex: 1;
     }
+    .field-with-action {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .field-with-action mat-form-field {
+      flex: 1;
+    }
   `]
 })
 export class InspectionDialog {
   form: FormGroup;
   isEdit = false;
+  
+  private dialog = inject(MatDialog);
+  private supabase = inject(SupabaseService);
 
   constructor(
     private fb: FormBuilder,
@@ -155,6 +189,34 @@ export class InspectionDialog {
       scheduled_date: [ins?.scheduled_date ? new Date(ins.scheduled_date) : null],
       executed_date: [ins?.executed_date ? new Date(ins.executed_date) : null],
       comments: [ins?.comments || '']
+    });
+  }
+
+  addNewCatalogItem(tableName: string, title: string, controlName: string, localArray: CatalogItem[]) {
+    const dialogRef = this.dialog.open(CatalogDialog, {
+      width: '400px',
+      data: { title, item: null } as CatalogDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result && result.name) {
+        try {
+          const { data, error } = await this.supabase.client
+            .from(tableName)
+            .insert({ name: result.name })
+            .select('*')
+            .single();
+            
+          if (error) throw error;
+          
+          if (data) {
+            localArray.push(data as CatalogItem);
+            this.form.get(controlName)?.setValue(data.id);
+          }
+        } catch (error) {
+          console.error(`Error saving ${tableName}:`, error);
+        }
+      }
     });
   }
 
