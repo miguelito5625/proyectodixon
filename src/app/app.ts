@@ -26,7 +26,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
   ],
   template: `
     <mat-sidenav-container class="sidenav-container">
-      <mat-sidenav #sidenav [mode]="isHandset() ? 'over' : 'side'" [opened]="!isHandset()">
+      <mat-sidenav #sidenav mode="over" opened="false">
         <div class="sidenav-header">
           <mat-icon>local_fire_department</mat-icon>
           <h2>FireSafety Ops</h2>
@@ -34,52 +34,52 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
         
         <mat-nav-list>
           <div mat-subheader>Principal</div>
-          <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+          <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" (click)="sidenav.close()">
             <mat-icon matListItemIcon>dashboard</mat-icon>
             <span matListItemTitle>Dashboard</span>
           </a>
 
           <mat-divider></mat-divider>
           <div mat-subheader>Operación</div>
-          <a mat-list-item routerLink="/inspections" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+          <a mat-list-item routerLink="/inspections" routerLinkActive="active-link" (click)="sidenav.close()">
             <mat-icon matListItemIcon>fact_check</mat-icon>
             <span matListItemTitle>Inspecciones</span>
           </a>
-          <a mat-list-item routerLink="/issues" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+          <a mat-list-item routerLink="/issues" routerLinkActive="active-link" (click)="sidenav.close()">
             <mat-icon matListItemIcon>report_problem</mat-icon>
             <span matListItemTitle>Pendientes</span>
           </a>
-          <a mat-list-item routerLink="/material-log" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+          <a mat-list-item routerLink="/material-log" routerLinkActive="active-link" (click)="sidenav.close()">
             <mat-icon matListItemIcon>inventory_2</mat-icon>
             <span matListItemTitle>Materiales</span>
           </a>
-          <a mat-list-item routerLink="/incentives" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+          <a mat-list-item routerLink="/incentives" routerLinkActive="active-link" (click)="sidenav.close()">
             <mat-icon matListItemIcon>payments</mat-icon>
             <span matListItemTitle>Incentivos</span>
           </a>
 
           <mat-divider></mat-divider>
           <div mat-subheader>Técnico</div>
-          <a mat-list-item routerLink="/pi-log" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+          <a mat-list-item routerLink="/pi-log" routerLinkActive="active-link" (click)="sidenav.close()">
             <mat-icon matListItemIcon>verified</mat-icon>
             <span matListItemTitle>Pruebas por Zona</span>
           </a>
-          <a mat-list-item routerLink="/trips" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+          <a mat-list-item routerLink="/trips" routerLinkActive="active-link" (click)="sidenav.close()">
             <mat-icon matListItemIcon>speed</mat-icon>
             <span matListItemTitle>Trips</span>
           </a>
-          <a mat-list-item routerLink="/valves" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+          <a mat-list-item routerLink="/valves" routerLinkActive="active-link" (click)="sidenav.close()">
             <mat-icon matListItemIcon>water_drop</mat-icon>
             <span matListItemTitle>Válvulas</span>
           </a>
-          <a mat-list-item routerLink="/electrical" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+          <a mat-list-item routerLink="/electrical" routerLinkActive="active-link" (click)="sidenav.close()">
             <mat-icon matListItemIcon>bolt</mat-icon>
             <span matListItemTitle>Eléctrico</span>
           </a>
 
           <mat-divider></mat-divider>
           <div mat-subheader>Administración</div>
-          <a mat-list-item routerLink="/settings" routerLinkActive="active-link" (click)="closeIfHandset(sidenav)">
+          <a mat-list-item routerLink="/settings" routerLinkActive="active-link" (click)="sidenav.close()">
             <mat-icon matListItemIcon>settings</mat-icon>
             <span matListItemTitle>Configuración</span>
           </a>
@@ -92,11 +92,10 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
             type="button"
             aria-label="Toggle sidenav"
             mat-icon-button
-            (click)="sidenav.toggle()"
-            *ngIf="isHandset()">
+            (click)="sidenav.toggle()">
             <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
           </button>
-          <span *ngIf="isHandset()">FireSafety Ops</span>
+          <span>FireSafety Ops</span>
           <span class="spacer"></span>
           
           <!-- Animated Dark/Light Mode Toggle -->

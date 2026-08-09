@@ -46,14 +46,14 @@ export interface ZoneTest {
         <div class="row">
           <mat-form-field appearance="outline" class="flex-fill">
             <mat-label>Prueba Visual (Fecha)</mat-label>
-            <input matInput [matDatepicker]="pickerVisual" formControlName="visual_date">
+            <input matInput [matDatepicker]="pickerVisual" formControlName="visual_date" readonly>
             <mat-datepicker-toggle matIconSuffix [for]="pickerVisual"></mat-datepicker-toggle>
             <mat-datepicker #pickerVisual></mat-datepicker>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="flex-fill">
             <mat-label>Hydro (Fecha)</mat-label>
-            <input matInput [matDatepicker]="pickerHydro" formControlName="hydro_date">
+            <input matInput [matDatepicker]="pickerHydro" formControlName="hydro_date" readonly>
             <mat-datepicker-toggle matIconSuffix [for]="pickerHydro"></mat-datepicker-toggle>
             <mat-datepicker #pickerHydro></mat-datepicker>
           </mat-form-field>
@@ -62,14 +62,14 @@ export interface ZoneTest {
         <div class="row">
           <mat-form-field appearance="outline" class="flex-fill">
             <mat-label>Aire 30 Min (Fecha)</mat-label>
-            <input matInput [matDatepicker]="picker30m" formControlName="thirty_min_date">
+            <input matInput [matDatepicker]="picker30m" formControlName="thirty_min_date" readonly>
             <mat-datepicker-toggle matIconSuffix [for]="picker30m"></mat-datepicker-toggle>
             <mat-datepicker #picker30m></mat-datepicker>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="flex-fill">
             <mat-label>Aire 24 Hrs (Fecha)</mat-label>
-            <input matInput [matDatepicker]="picker24h" formControlName="twenty_four_air_date">
+            <input matInput [matDatepicker]="picker24h" formControlName="twenty_four_air_date" readonly>
             <mat-datepicker-toggle matIconSuffix [for]="picker24h"></mat-datepicker-toggle>
             <mat-datepicker #picker24h></mat-datepicker>
           </mat-form-field>
@@ -77,7 +77,7 @@ export interface ZoneTest {
 
         <mat-form-field appearance="outline">
           <mat-label>Disparo/Trip (Fecha)</mat-label>
-          <input matInput [matDatepicker]="pickerTrip" formControlName="trip_date">
+          <input matInput [matDatepicker]="pickerTrip" formControlName="trip_date" readonly>
           <mat-datepicker-toggle matIconSuffix [for]="pickerTrip"></mat-datepicker-toggle>
           <mat-datepicker #pickerTrip></mat-datepicker>
         </mat-form-field>
