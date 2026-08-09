@@ -50,9 +50,12 @@ export interface InspectionDialogData {
           </mat-form-field>
           <mat-form-field appearance="outline" class="flex-fill">
             <mat-label>Tipo</mat-label>
-            <mat-select formControlName="type_id" (selectionChange)="onSelectChange($event, 'inspection_types', 'Tipo', 'type_id', data.inspectionTypes)">
+            <mat-select formControlName="type_id" (selectionChange)="onSelectChange($event, 'inspection_types', 'Tipo', 'type_id', data.inspectionTypes, 'types')">
+              <div class="select-search-container" (keydown)="$event.stopPropagation()">
+                <input type="text" (input)="filterData('types', $event)" placeholder="Buscar..." autocomplete="off">
+              </div>
               <mat-option [value]="null">-- Ninguno --</mat-option>
-              <mat-option *ngFor="let t of data.inspectionTypes" [value]="t.id">{{ t.name }}</mat-option>
+              <mat-option *ngFor="let t of filteredTypes" [value]="t.id">{{ t.name }}</mat-option>
               <mat-divider></mat-divider>
               <mat-option value="ADD_NEW" class="add-new-option">
                 <mat-icon color="primary">add</mat-icon> <strong>Añadir Nuevo...</strong>
@@ -64,9 +67,12 @@ export interface InspectionDialogData {
         <div class="row">
           <mat-form-field appearance="outline" class="flex-fill">
             <mat-label>Área</mat-label>
-            <mat-select formControlName="area_id" (selectionChange)="onSelectChange($event, 'areas', 'Área', 'area_id', data.areas)">
+            <mat-select formControlName="area_id" (selectionChange)="onSelectChange($event, 'areas', 'Área', 'area_id', data.areas, 'areas')">
+              <div class="select-search-container" (keydown)="$event.stopPropagation()">
+                <input type="text" (input)="filterData('areas', $event)" placeholder="Buscar..." autocomplete="off">
+              </div>
               <mat-option [value]="null">-- Ninguna --</mat-option>
-              <mat-option *ngFor="let a of data.areas" [value]="a.id">{{ a.name }}</mat-option>
+              <mat-option *ngFor="let a of filteredAreas" [value]="a.id">{{ a.name }}</mat-option>
               <mat-divider></mat-divider>
               <mat-option value="ADD_NEW" class="add-new-option">
                 <mat-icon color="primary">add</mat-icon> <strong>Añadir Nueva...</strong>
@@ -75,9 +81,12 @@ export interface InspectionDialogData {
           </mat-form-field>
           <mat-form-field appearance="outline" class="flex-fill">
             <mat-label>Nivel</mat-label>
-            <mat-select formControlName="level_id" (selectionChange)="onSelectChange($event, 'levels', 'Nivel', 'level_id', data.levels)">
+            <mat-select formControlName="level_id" (selectionChange)="onSelectChange($event, 'levels', 'Nivel', 'level_id', data.levels, 'levels')">
+              <div class="select-search-container" (keydown)="$event.stopPropagation()">
+                <input type="text" (input)="filterData('levels', $event)" placeholder="Buscar..." autocomplete="off">
+              </div>
               <mat-option [value]="null">-- Ninguno --</mat-option>
-              <mat-option *ngFor="let l of data.levels" [value]="l.id">{{ l.name }}</mat-option>
+              <mat-option *ngFor="let l of filteredLevels" [value]="l.id">{{ l.name }}</mat-option>
               <mat-divider></mat-divider>
               <mat-option value="ADD_NEW" class="add-new-option">
                 <mat-icon color="primary">add</mat-icon> <strong>Añadir Nuevo...</strong>
@@ -97,9 +106,12 @@ export interface InspectionDialogData {
           </mat-form-field>
           <mat-form-field appearance="outline" class="flex-fill">
             <mat-label>Inspector</mat-label>
-            <mat-select formControlName="inspector_id" (selectionChange)="onSelectChange($event, 'inspectors', 'Inspector', 'inspector_id', data.inspectors)">
+            <mat-select formControlName="inspector_id" (selectionChange)="onSelectChange($event, 'inspectors', 'Inspector', 'inspector_id', data.inspectors, 'inspectors')">
+              <div class="select-search-container" (keydown)="$event.stopPropagation()">
+                <input type="text" (input)="filterData('inspectors', $event)" placeholder="Buscar..." autocomplete="off">
+              </div>
               <mat-option [value]="null">-- Ninguno --</mat-option>
-              <mat-option *ngFor="let i of data.inspectors" [value]="i.id">{{ i.name }}</mat-option>
+              <mat-option *ngFor="let i of filteredInspectors" [value]="i.id">{{ i.name }}</mat-option>
               <mat-divider></mat-divider>
               <mat-option value="ADD_NEW" class="add-new-option">
                 <mat-icon color="primary">add</mat-icon> <strong>Añadir Nuevo...</strong>
@@ -156,11 +168,35 @@ export interface InspectionDialogData {
       align-items: center;
       color: var(--mat-sys-primary);
     }
+    .select-search-container {
+      padding: 8px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: var(--mat-sys-surface-container, #f5f5f5);
+      border-bottom: 1px solid var(--mat-sys-outline-variant, #e0e0e0);
+    }
+    .select-search-container input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--mat-sys-outline-variant, #ccc);
+      border-radius: 4px;
+      box-sizing: border-box;
+      outline: none;
+    }
+    .select-search-container input:focus {
+      border-color: var(--mat-sys-primary);
+    }
   `]
 })
 export class InspectionDialog {
   form: FormGroup;
   isEdit = false;
+  
+  filteredTypes: CatalogItem[] = [];
+  filteredAreas: CatalogItem[] = [];
+  filteredLevels: CatalogItem[] = [];
+  filteredInspectors: CatalogItem[] = [];
   
   private dialog = inject(MatDialog);
   private supabase = inject(SupabaseService);
@@ -185,17 +221,35 @@ export class InspectionDialog {
       executed_date: [ins?.executed_date ? new Date(ins.executed_date) : null],
       comments: [ins?.comments || '']
     });
+    
+    this.filteredTypes = [...this.data.inspectionTypes];
+    this.filteredAreas = [...this.data.areas];
+    this.filteredLevels = [...this.data.levels];
+    this.filteredInspectors = [...this.data.inspectors];
   }
 
-  onSelectChange(event: any, tableName: string, title: string, controlName: string, localArray: CatalogItem[]) {
-    if (event.value === 'ADD_NEW') {
-      // Temporarily revert to null while dialog opens so it doesn't show "ADD_NEW"
-      this.form.get(controlName)?.setValue(null);
-      this.addNewCatalogItem(tableName, title, controlName, localArray);
+  filterData(listName: string, event: Event) {
+    const term = (event.target as HTMLInputElement).value.toLowerCase();
+    
+    if (listName === 'types') {
+      this.filteredTypes = this.data.inspectionTypes.filter(i => i.name.toLowerCase().includes(term));
+    } else if (listName === 'areas') {
+      this.filteredAreas = this.data.areas.filter(i => i.name.toLowerCase().includes(term));
+    } else if (listName === 'levels') {
+      this.filteredLevels = this.data.levels.filter(i => i.name.toLowerCase().includes(term));
+    } else if (listName === 'inspectors') {
+      this.filteredInspectors = this.data.inspectors.filter(i => i.name.toLowerCase().includes(term));
     }
   }
 
-  addNewCatalogItem(tableName: string, title: string, controlName: string, localArray: CatalogItem[]) {
+  onSelectChange(event: any, tableName: string, title: string, controlName: string, localArray: CatalogItem[], listName: string) {
+    if (event.value === 'ADD_NEW') {
+      this.form.get(controlName)?.setValue(null);
+      this.addNewCatalogItem(tableName, title, controlName, localArray, listName);
+    }
+  }
+
+  addNewCatalogItem(tableName: string, title: string, controlName: string, localArray: CatalogItem[], listName: string) {
     const dialogRef = this.dialog.open(CatalogDialog, {
       width: '400px',
       data: { title, item: null } as CatalogDialogData
@@ -214,6 +268,7 @@ export class InspectionDialog {
           
           if (data) {
             localArray.push(data as CatalogItem);
+            this.filterData(listName, { target: { value: '' } } as any); // Refresh filter
             this.form.get(controlName)?.setValue(data.id);
           }
         } catch (error) {
