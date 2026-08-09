@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
@@ -22,7 +23,8 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     MatIconModule,
     MatSidenavModule,
     MatListModule,
-    MatDividerModule
+    MatDividerModule,
+    MatExpansionModule
   ],
   template: `
     <mat-sidenav-container class="sidenav-container">
@@ -79,10 +81,29 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
           <mat-divider></mat-divider>
           <div mat-subheader>Administración</div>
-          <a mat-list-item routerLink="/settings" routerLinkActive="active-link" (click)="sidenav.close()">
-            <mat-icon matListItemIcon>settings</mat-icon>
-            <span matListItemTitle>Configuración</span>
-          </a>
+          <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
+            <mat-expansion-panel-header>
+              <mat-panel-title style="display: flex; align-items: center; gap: 16px;">
+                <mat-icon style="color: var(--mat-sys-on-surface-variant);">settings</mat-icon>
+                <span style="color: var(--mat-sys-on-surface);">Catálogos</span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            
+            <mat-nav-list style="padding-top: 0;">
+              <a mat-list-item routerLink="/settings" [queryParams]="{tab: '0'}" routerLinkActive="active-link" (click)="sidenav.close()">
+                <span matListItemTitle style="padding-left: 40px;">Áreas</span>
+              </a>
+              <a mat-list-item routerLink="/settings" [queryParams]="{tab: '1'}" routerLinkActive="active-link" (click)="sidenav.close()">
+                <span matListItemTitle style="padding-left: 40px;">Niveles</span>
+              </a>
+              <a mat-list-item routerLink="/settings" [queryParams]="{tab: '2'}" routerLinkActive="active-link" (click)="sidenav.close()">
+                <span matListItemTitle style="padding-left: 40px;">Tipos de Inspección</span>
+              </a>
+              <a mat-list-item routerLink="/settings" [queryParams]="{tab: '3'}" routerLinkActive="active-link" (click)="sidenav.close()">
+                <span matListItemTitle style="padding-left: 40px;">Inspectores</span>
+              </a>
+            </mat-nav-list>
+          </mat-expansion-panel>
         </mat-nav-list>
       </mat-sidenav>
 
@@ -145,6 +166,14 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
     mat-sidenav .mat-divider {
       margin: 0;
+    }
+
+    mat-expansion-panel-header {
+      padding: 0 16px;
+    }
+
+    .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:hover:not([aria-disabled=true]) {
+      background: rgba(0,0,0,0.04);
     }
 
     .active-link {

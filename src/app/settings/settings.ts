@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SupabaseService } from '../supabase.service';
+import { ActivatedRoute } from '@angular/router';
 import { CatalogDialog, CatalogItem, CatalogDialogData } from './catalog-dialog';
 
 @Component({
@@ -31,7 +32,7 @@ import { CatalogDialog, CatalogItem, CatalogDialogData } from './catalog-dialog'
         <mat-spinner></mat-spinner>
       </div>
 
-      <mat-tab-group>
+      <mat-tab-group [selectedIndex]="selectedTabIndex()">
         <mat-tab label="Áreas">
           <ng-container *ngTemplateOutlet="catalogTable; context: { table: 'areas', title: 'Área', data: areasData }"></ng-container>
         </mat-tab>
@@ -126,6 +127,7 @@ import { CatalogDialog, CatalogItem, CatalogDialogData } from './catalog-dialog'
 })
 export class Settings implements OnInit {
   isLoading = signal(true);
+  selectedTabIndex = signal(0);
   
   areasData = new MatTableDataSource<CatalogItem>();
   levelsData = new MatTableDataSource<CatalogItem>();
@@ -134,8 +136,14 @@ export class Settings implements OnInit {
 
   private supabase = inject(SupabaseService);
   private dialog = inject(MatDialog);
+  private route = inject(ActivatedRoute);
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['tab']) {
+        this.selectedTabIndex.set(parseInt(params['tab'], 10));
+      }
+    });
     this.loadAllCatalogs();
   }
 

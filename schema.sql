@@ -1,4 +1,10 @@
--- Esquema para Supabase - FireSafety Ops
+-- Esquema Consolidado para Supabase - FireSafety Ops (Fases 1 y 2)
+
+-- Limpieza de tablas (Fase 2) si existían previamente
+DROP TABLE IF EXISTS public.zone_tests;
+DROP TABLE IF EXISTS public.trip_tests;
+DROP TABLE IF EXISTS public.issues_log;
+DROP TABLE IF EXISTS public.electrical_requirements;
 
 -- 1. Catálogos
 CREATE TABLE IF NOT EXISTS public.areas (
@@ -22,7 +28,7 @@ CREATE TABLE IF NOT EXISTS public.inspectors (
     user_id UUID REFERENCES auth.users(id) -- Optional link to auth
 );
 
--- 2. Inspecciones (Control de Inspecciones)
+-- 2. Inspecciones (Control de Inspecciones Fase 1)
 CREATE TABLE IF NOT EXISTS public.inspections (
     id SERIAL PRIMARY KEY,
     element VARCHAR(255) NOT NULL,
@@ -37,7 +43,59 @@ CREATE TABLE IF NOT EXISTS public.inspections (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 3. Logística y Materiales
+-- 3. Pruebas por Zona (PI LOG - IAD 157/158 - Fase 2)
+CREATE TABLE IF NOT EXISTS public.zone_tests (
+    id SERIAL PRIMARY KEY,
+    zone_name VARCHAR(255) NOT NULL,
+    visual_date DATE,
+    hydro_date DATE,
+    thirty_min_date DATE,
+    twenty_four_air_date DATE,
+    trip_date DATE,
+    comments TEXT,
+    resolution TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 4. Trips (Pruebas de Disparo - Parámetros Técnicos - Fase 2)
+CREATE TABLE IF NOT EXISTS public.trip_tests (
+    id SERIAL PRIMARY KEY,
+    zone VARCHAR(100) NOT NULL,
+    accelerator_yn VARCHAR(10),
+    starting_water NUMERIC,
+    starting_air NUMERIC,
+    time_to_trip NUMERIC,
+    air_at_trip NUMERIC,
+    wto NUMERIC,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 5. Pendientes (Issues Log - Fase 2)
+CREATE TABLE IF NOT EXISTS public.issues_log (
+    id SERIAL PRIMARY KEY,
+    item_number VARCHAR(50),
+    detail TEXT NOT NULL,
+    priority VARCHAR(50),
+    status VARCHAR(50) DEFAULT 'Pendiente',
+    responsible VARCHAR(100),
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 6. Eléctrico (Requerimientos - Fase 2)
+CREATE TABLE IF NOT EXISTS public.electrical_requirements (
+    id SERIAL PRIMARY KEY,
+    quantity VARCHAR(50),
+    equipment VARCHAR(255),
+    location VARCHAR(255),
+    voltage VARCHAR(50),
+    phase VARCHAR(50),
+    hz VARCHAR(50),
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 7. Logística y Materiales
 CREATE TABLE IF NOT EXISTS public.materials (
     id SERIAL PRIMARY KEY,
     submittal_number VARCHAR(100),
@@ -53,7 +111,7 @@ CREATE TABLE IF NOT EXISTS public.materials (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 4. Valve Take Off (Técnico)
+-- 8. Valve Take Off (Técnico)
 CREATE TABLE IF NOT EXISTS public.valve_configs (
     id SERIAL PRIMARY KEY,
     zone VARCHAR(100),
@@ -70,7 +128,7 @@ CREATE TABLE IF NOT EXISTS public.valve_configs (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 5. Incentivos (Acceso Restringido)
+-- 9. Incentivos (Acceso Restringido)
 CREATE TABLE IF NOT EXISTS public.labor_incentives (
     id SERIAL PRIMARY KEY,
     zone VARCHAR(100),
