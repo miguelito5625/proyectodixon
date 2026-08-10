@@ -91,9 +91,9 @@ export interface Inspection {
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
           <td mat-cell *matCellDef="let row">
-            <mat-chip [ngClass]="getStatusClass(row.status)" highlighted>
+            <span class="status-label" [ngClass]="getStatusClass(row.status)">
               {{row.status || 'Pendiente'}}
-            </mat-chip>
+            </span>
           </td>
         </ng-container>
 
@@ -180,22 +180,6 @@ export interface Inspection {
       justify-content: center;
     }
     
-    mat-chip {
-      font-weight: 500;
-    }
-    
-    .status-aprobado {
-      background-color: var(--status-aprobado) !important;
-      color: white !important;
-    }
-    .status-pendiente {
-      background-color: var(--status-pendiente) !important;
-      color: white !important;
-    }
-    .status-rechazado {
-      background-color: var(--status-rechazado) !important;
-      color: white !important;
-    }
   `]
 })
 export class Inspections implements OnInit {
