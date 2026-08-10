@@ -274,6 +274,8 @@ export class Inspections implements OnInit {
       return 'status-aprobado';
     } else if (s.includes('rechazado') || s.includes('rejected') || s.includes('reprobada')) {
       return 'status-rechazado';
+    } else if (s.includes('progreso') || s.includes('progress')) {
+      return 'status-en-progreso';
     }
     return 'status-pendiente';
   }

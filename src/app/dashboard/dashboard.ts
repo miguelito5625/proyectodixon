@@ -68,6 +68,7 @@ export class NoteDialog {
       <mat-form-field appearance="outline" class="status-dropdown" [ngClass]="getStatusClass(inspeccion.estado)">
         <mat-select [ngModel]="inspeccion.estado" (ngModelChange)="onStatusChange($event)">
           <mat-option value="Pendiente">Pendiente</mat-option>
+          <mat-option value="En Progreso">En Progreso</mat-option>
           <mat-option value="Aprobado">Aprobado</mat-option>
           <mat-option value="Rechazado">Rechazado</mat-option>
         </mat-select>
@@ -96,6 +97,10 @@ export class NoteDialog {
       --mdc-outlined-text-field-outline-color: var(--status-pendiente);
       --mdc-outlined-text-field-focus-outline-color: var(--status-pendiente);
     }
+    .status-en-progreso-field {
+      --mdc-outlined-text-field-outline-color: var(--status-en-progreso);
+      --mdc-outlined-text-field-focus-outline-color: var(--status-en-progreso);
+    }
     .status-rechazado-field {
       --mdc-outlined-text-field-outline-color: var(--status-rechazado);
       --mdc-outlined-text-field-focus-outline-color: var(--status-rechazado);
@@ -116,6 +121,7 @@ export class InspectionDropdown {
 
   getStatusClass(estado: string) {
     if (estado === 'Aprobado' || estado === 'Aprobada') return 'status-aprobado-field';
+    if (estado === 'En Progreso' || estado === 'En progreso') return 'status-en-progreso-field';
     if (estado === 'Pendiente') return 'status-pendiente-field';
     if (estado === 'Rechazado' || estado === 'Reprobada') return 'status-rechazado-field';
     return '';

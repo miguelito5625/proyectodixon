@@ -14,7 +14,8 @@
   --text-secondary: #546e7a;
   
   --status-aprobado: #4caf50;
-  --status-pendiente: #ff9800;
+  --status-pendiente: #9e9e9e; /* Gray */
+  --status-en-progreso: #ff9800; /* Orange */
   --status-rechazado: #f44336;
 }
 
@@ -44,6 +45,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .status-aprobado { background-color: var(--status-aprobado); }
 .status-pendiente { background-color: var(--status-pendiente); }
+.status-en-progreso { background-color: var(--status-en-progreso); }
 .status-rechazado { background-color: var(--status-rechazado); }
 
 /* Layout utilities */

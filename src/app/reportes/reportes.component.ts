@@ -116,10 +116,10 @@ export class ReportesComponent {
     }
   };
   public pieChartData: ChartData<'pie', number[], string | string[]> = {
-    labels: ['Aprobado', 'Pendiente', 'Rechazado'],
+    labels: ['Aprobado', 'En Progreso', 'Pendiente', 'Rechazado'],
     datasets: [ { 
-      data: [0, 0, 0],
-      backgroundColor: ['#4caf50', '#ff9800', '#f44336']
+      data: [0, 0, 0, 0],
+      backgroundColor: ['#4caf50', '#ff9800', '#9e9e9e', '#f44336']
     } ]
   };
   public pieChartType: ChartType = 'pie';
@@ -145,20 +145,22 @@ export class ReportesComponent {
       // Calculate Pie Chart Data
       const inspecciones = this.dataService.inspecciones();
       let aprobados = 0;
+      let enProgreso = 0;
       let pendientes = 0;
       let rechazados = 0;
 
       inspecciones.forEach(i => {
         if (i.estado === 'Aprobado' || i.estado === 'Aprobada') aprobados++;
         else if (i.estado === 'Rechazado' || i.estado === 'Reprobada') rechazados++;
+        else if (i.estado === 'En Progreso' || i.estado === 'En progreso') enProgreso++;
         else pendientes++;
       });
 
       this.pieChartData = {
-        labels: ['Aprobado', 'Pendiente', 'Rechazado'],
+        labels: ['Aprobado', 'En Progreso', 'Pendiente', 'Rechazado'],
         datasets: [{
-          data: [aprobados, pendientes, rechazados],
-          backgroundColor: ['#4caf50', '#ff9800', '#f44336']
+          data: [aprobados, enProgreso, pendientes, rechazados],
+          backgroundColor: ['#4caf50', '#ff9800', '#9e9e9e', '#f44336']
         }]
       };
 
