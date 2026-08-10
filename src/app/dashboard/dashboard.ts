@@ -42,21 +42,6 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
       <mat-card class="metric-card">
         <mat-card-header>
-          <div mat-card-avatar class="card-icon materials-icon">
-            <mat-icon>inventory_2</mat-icon>
-          </div>
-          <mat-card-title>Log de Materiales</mat-card-title>
-          <mat-card-subtitle>Submittals registrados</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="metric-value" *ngIf="!isLoadingMaterials(); else loading">
-            {{ totalMaterials() }}
-          </div>
-        </mat-card-content>
-      </mat-card>
-      
-      <mat-card class="metric-card">
-        <mat-card-header>
           <div mat-card-avatar class="card-icon pending-icon">
             <mat-icon>schedule</mat-icon>
           </div>
@@ -85,23 +70,6 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
               [data]="pieChartData"
               [type]="pieChartType"
               [options]="pieChartOptions">
-            </canvas>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- PI LOG Bar Chart -->
-      <mat-card class="chart-card">
-        <mat-card-header>
-          <mat-card-title>Avance Pruebas por Zona (PI LOG)</mat-card-title>
-          <mat-card-subtitle>Pasos completados (fechas registradas) por cada zona</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="chart-container" *ngIf="!isLoadingCharts(); else loading">
-            <canvas baseChart
-              [data]="barChartData"
-              [type]="barChartType"
-              [options]="barChartOptions">
             </canvas>
           </div>
         </mat-card-content>
@@ -169,7 +137,6 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
     }
 
     .inspections-icon { background-color: var(--mat-sys-primary); }
-    .materials-icon { background-color: var(--mat-sys-tertiary); }
     .pending-icon { background-color: var(--mat-sys-error); }
 
     .metric-value {
@@ -201,10 +168,8 @@ export class Dashboard implements OnInit {
 
   totalInspections = signal(0);
   pendingInspections = signal(0);
-  totalMaterials = signal(0);
   
   isLoadingInspections = signal(true);
-  isLoadingMaterials = signal(true);
   isLoadingCharts = signal(true);
 
   // --- PIE CHART CONFIG ---
@@ -229,29 +194,6 @@ export class Dashboard implements OnInit {
     }]
   };
 
-  // --- BAR CHART CONFIG ---
-  public barChartType: ChartType = 'bar';
-  public barChartOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: {
-      duration: 1500,
-      easing: 'easeOutQuart'
-    },
-    scales: {
-      y: { beginAtZero: true, max: 5 } // 5 tests max
-    },
-    plugins: {
-      legend: { display: false }
-    }
-  };
-  public barChartData: ChartData<'bar'> = {
-    labels: [],
-    datasets: [
-      { data: [], label: 'Pruebas Completadas', backgroundColor: '#3f51b5' }
-    ]
-  };
-
   ngOnInit() {
     this.loadMetrics();
     this.loadChartData();
@@ -259,7 +201,6 @@ export class Dashboard implements OnInit {
 
   async loadMetrics() {
     this.isLoadingInspections.set(true);
-    this.isLoadingMaterials.set(true);
 
     try {
       // Get total inspections
@@ -277,28 +218,17 @@ export class Dashboard implements OnInit {
         
       if (!pendError) this.pendingInspections.set(pendCount || 0);
       
-      this.isLoadingInspections.set(false);
-
-      // Get total materials
-      const { count: matCount, error: matError } = await this.supabase.client
-        .from('materials')
-        .select('*', { count: 'exact', head: true });
-        
-      if (!matError) this.totalMaterials.set(matCount || 0);
-      
-      this.isLoadingMaterials.set(false);
-      
     } catch (error) {
       console.error('Exception fetching metrics:', error);
+    } finally {
       this.isLoadingInspections.set(false);
-      this.isLoadingMaterials.set(false);
     }
   }
 
   async loadChartData() {
     this.isLoadingCharts.set(true);
     try {
-      // 1. Fetch Inspections Status
+      // Fetch Inspections Status
       const { data: insData, error: insError } = await this.supabase.client
         .from('inspections')
         .select('status');
@@ -322,42 +252,6 @@ export class Dashboard implements OnInit {
           }]
         };
       }
-
-      // 2. Fetch PI LOG (Zone Tests)
-      const { data: piData, error: piError } = await this.supabase.client
-        .from('zone_tests')
-        .select('*')
-        .order('id', { ascending: true })
-        .limit(10); // Show max 10 zones in chart
-
-      if (!piError && piData) {
-        const labels: string[] = [];
-        const testCounts: number[] = [];
-
-        piData.forEach((zone: any) => {
-          labels.push(zone.zone_name || 'Sin Nombre');
-          
-          let completed = 0;
-          if (zone.visual_date) completed++;
-          if (zone.hydro_date) completed++;
-          if (zone.thirty_min_date) completed++;
-          if (zone.twenty_four_air_date) completed++;
-          if (zone.trip_date) completed++;
-
-          testCounts.push(completed);
-        });
-
-        this.barChartData = {
-          labels: labels,
-          datasets: [{ 
-            data: testCounts, 
-            label: 'Pruebas Completadas', 
-            backgroundColor: '#3f51b5',
-            borderRadius: 4
-          }]
-        };
-      }
-
     } catch (error) {
       console.error('Exception fetching chart data:', error);
     } finally {

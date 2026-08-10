@@ -4,7 +4,7 @@ Este documento mantiene el contexto general y la arquitectura del proyecto para 
 
 ## 1. Descripción General
 - **Nombre:** FireSafety Ops Web App
-- **Propósito:** Aplicación web para el control de operaciones de seguridad contra incendios, registro de inspecciones, bitácora de materiales (submittals), pendientes (issues) y pruebas técnicas (eléctricas, válvulas, trips y pruebas por zona - PI LOG).
+- **Propósito:** Aplicación web enfocada exclusivamente en el control de operaciones de seguridad contra incendios y el registro de inspecciones.
 - **Stack Tecnológico:**
   - **Frontend:** Angular 17+ (Standalone Components).
   - **UI/Estilos:** Angular Material, CSS Vanilla, diseños y temas modernos (incluyendo *dark mode* interactivo).
@@ -17,10 +17,8 @@ El código fuente principal se encuentra en `src/app/` y se organiza modularment
 - `app.ts` / `app.routes.ts`: Archivos principales de la aplicación y enrutamiento con navegación (Sidenav) y protección de rutas (`AuthGuard`).
 - `supabase.service.ts`: Servicio encargado de la comunicación con Supabase (Autenticación e interacciones con la Base de Datos).
 - `login/`: Módulo de autenticación que gestiona el acceso seguro a la app.
-- `dashboard/`: Pantalla de inicio con métricas de KPI (tarjetas numéricas) y gráficas con animaciones integradas.
-- `inspections/`, `issues/`, `material-log/`, `incentives/`: Módulos operativos.
-- `electrical/`, `pi-log/`, `trips/`, `valves/`: Módulos técnicos.
-- `settings/`: Configuración y catálogos de la plataforma.
+- `dashboard/`: Pantalla de inicio con métricas de KPI (tarjetas numéricas) y gráficas referentes al estatus de inspecciones.
+- `inspections/`: Módulo operativo principal para la visualización y gestión de inspecciones.
 
 **Nota sobre scripts externos:**
 Los scripts de migración de datos (Python) y los archivos de Excel de respaldo o importación se almacenan fuera de `src`, dentro de la carpeta `/extras/` para mantener limpio el entorno Angular.

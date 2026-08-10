@@ -49,63 +49,6 @@ import { SupabaseService } from './supabase.service';
               <mat-icon matListItemIcon>fact_check</mat-icon>
               <span matListItemTitle>Inspecciones</span>
             </a>
-            <a mat-list-item routerLink="/issues" routerLinkActive="active-link" (click)="sidenav.close()">
-              <mat-icon matListItemIcon>report_problem</mat-icon>
-              <span matListItemTitle>Pendientes</span>
-            </a>
-            <a mat-list-item routerLink="/material-log" routerLinkActive="active-link" (click)="sidenav.close()">
-              <mat-icon matListItemIcon>inventory_2</mat-icon>
-              <span matListItemTitle>Materiales</span>
-            </a>
-            <a mat-list-item routerLink="/incentives" routerLinkActive="active-link" (click)="sidenav.close()">
-              <mat-icon matListItemIcon>payments</mat-icon>
-              <span matListItemTitle>Incentivos</span>
-            </a>
-
-            <mat-divider></mat-divider>
-            <div mat-subheader>Técnico</div>
-            <a mat-list-item routerLink="/pi-log" routerLinkActive="active-link" (click)="sidenav.close()">
-              <mat-icon matListItemIcon>verified</mat-icon>
-              <span matListItemTitle>Pruebas por Zona</span>
-            </a>
-            <a mat-list-item routerLink="/trips" routerLinkActive="active-link" (click)="sidenav.close()">
-              <mat-icon matListItemIcon>speed</mat-icon>
-              <span matListItemTitle>Trips</span>
-            </a>
-            <a mat-list-item routerLink="/valves" routerLinkActive="active-link" (click)="sidenav.close()">
-              <mat-icon matListItemIcon>water_drop</mat-icon>
-              <span matListItemTitle>Válvulas</span>
-            </a>
-            <a mat-list-item routerLink="/electrical" routerLinkActive="active-link" (click)="sidenav.close()">
-              <mat-icon matListItemIcon>bolt</mat-icon>
-              <span matListItemTitle>Eléctrico</span>
-            </a>
-
-            <mat-divider></mat-divider>
-            <div mat-subheader>Administración</div>
-            <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
-              <mat-expansion-panel-header>
-                <mat-panel-title style="display: flex; align-items: center; gap: 16px;">
-                  <mat-icon style="color: var(--mat-sys-on-surface-variant);">settings</mat-icon>
-                  <span style="color: var(--mat-sys-on-surface);">Catálogos</span>
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              
-              <mat-nav-list style="padding-top: 0;">
-                <a mat-list-item routerLink="/settings" [queryParams]="{tab: '0'}" routerLinkActive="active-link" (click)="sidenav.close()">
-                  <span matListItemTitle style="padding-left: 40px;">Áreas</span>
-                </a>
-                <a mat-list-item routerLink="/settings" [queryParams]="{tab: '1'}" routerLinkActive="active-link" (click)="sidenav.close()">
-                  <span matListItemTitle style="padding-left: 40px;">Niveles</span>
-                </a>
-                <a mat-list-item routerLink="/settings" [queryParams]="{tab: '2'}" routerLinkActive="active-link" (click)="sidenav.close()">
-                  <span matListItemTitle style="padding-left: 40px;">Tipos de Inspección</span>
-                </a>
-                <a mat-list-item routerLink="/settings" [queryParams]="{tab: '3'}" routerLinkActive="active-link" (click)="sidenav.close()">
-                  <span matListItemTitle style="padding-left: 40px;">Inspectores</span>
-                </a>
-              </mat-nav-list>
-            </mat-expansion-panel>
           </mat-nav-list>
         </mat-sidenav>
 
