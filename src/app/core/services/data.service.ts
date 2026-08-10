@@ -110,6 +110,19 @@ export class DataService {
     this.inspecciones.update(insps => insps.filter(i => i.linea_id !== id));
   }
 
+  // Inspecciones CRUD
+  addInspeccion(inspeccion: Omit<Inspeccion, 'id'>) {
+    this.inspecciones.update(insps => [...insps, { ...inspeccion, id: this.generateId(insps) }]);
+  }
+
+  updateInspeccion(id: number, data: Partial<Inspeccion>) {
+    this.inspecciones.update(insps => insps.map(i => i.id === id ? { ...i, ...data } : i));
+  }
+
+  deleteInspeccion(id: number) {
+    this.inspecciones.update(insps => insps.filter(i => i.id !== id));
+  }
+
   private generateId(items: any[]): number {
     return items.length > 0 ? Math.max(...items.map(i => i.id)) + 1 : 1;
   }
