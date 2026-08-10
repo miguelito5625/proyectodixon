@@ -13,6 +13,7 @@ import { SupabaseService } from './supabase.service';
 import { DataService } from './core/services/data.service';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -30,7 +31,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatDividerModule,
     MatExpansionModule,
     MatSelectModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    FormsModule
   ],
   template: `
     @if(supabase.session()) {
@@ -38,7 +40,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
         <mat-sidenav #sidenav mode="over" opened="false">
           <div class="sidenav-header">
             <mat-icon>local_fire_department</mat-icon>
-            <h2>DataHall Altas/Bajas</h2>
+            <h2>FireSafety Ops</h2>
           </div>
           
           <mat-nav-list>
@@ -77,7 +79,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
             <span class="spacer"></span>
             
             <mat-form-field appearance="outline" class="project-selector">
-              <mat-select [value]="activeProyecto()?.id">
+              <mat-select [ngModel]="dataService.activeProyectoId()" (ngModelChange)="onProjectChange($event)">
                 @for(proyecto of proyectos(); track proyecto.id) {
                   <mat-option [value]="proyecto.id">{{ proyecto.nombre }}</mat-option>
                 }
@@ -197,7 +199,6 @@ export class App {
   public dataService = inject(DataService);
   
   proyectos = this.dataService.proyectos;
-  activeProyecto = computed(() => this.proyectos().length > 0 ? this.proyectos()[0] : null);
   
   isHandset = signal(false);
   isDarkMode = signal(false);
@@ -234,5 +235,9 @@ export class App {
   async signOut() {
     await this.supabase.signOut();
     this.router.navigate(['/login']);
+  }
+
+  onProjectChange(newId: number) {
+    this.dataService.activeProyectoId.set(newId);
   }
 }
