@@ -48,4 +48,13 @@ export class DataService {
       return line;
     }));
   }
+
+  updateProyecto(id: number, data: Partial<Proyecto>) {
+    this.proyectos.update(projs => projs.map(p => {
+      if (p.id === id) {
+        return { ...p, ...data };
+      }
+      return p;
+    }));
+  }
 }
