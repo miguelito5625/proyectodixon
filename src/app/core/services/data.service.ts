@@ -1,44 +1,51 @@
 import { Injectable, computed, signal, inject } from '@angular/core';
 import { DataSeed, Inspeccion, Linea, Proyecto, Zona } from '../models/data.models';
-// @ts-ignore
-import dbSeed from '../../../../extras/db_seed.json';
 import { SupabaseService } from '../../supabase.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  private initialData = dbSeed as DataSeed;
   private supabase = inject(SupabaseService);
 
   proyectos = signal<Proyecto[]>([]);
   
   // Writable signals for all data
-  private _zonas = signal<Zona[]>(this.initialData.zonas);
-  private _lineas = signal<Linea[]>(this.initialData.lineas);
-  private _inspecciones = signal<Inspeccion[]>(this.initialData.inspecciones);
+  private _zonas = signal<Zona[]>([]);
+  private _lineas = signal<Linea[]>([]);
+  private _inspecciones = signal<Inspeccion[]>([]);
 
   // Active project selection
-  activeProyectoId = signal<number>(this.initialData.proyectos.length > 0 ? this.initialData.proyectos[0].id : 0);
+  activeProyectoId = signal<number>(0);
 
   // Computed signals filtered by active project
   zonas = computed(() => this._zonas().filter(z => z.proyecto_id === this.activeProyectoId()));
   
   constructor() {
-    this.loadProyectos();
+    this.loadInitialData();
   }
 
-  async loadProyectos() {
-    const { data, error } = await this.supabase.client.from('proyectos').select('*');
-    if (!error && data) {
-      this.proyectos.set(data);
-      if (data.length > 0 && this.activeProyectoId() === 0) {
-        this.activeProyectoId.set(data[0].id);
+  async loadInitialData() {
+    // 1. Cargar Proyectos
+    const { data: pData } = await this.supabase.client.from('proyectos').select('*');
+    if (pData) {
+      this.proyectos.set(pData);
+      if (pData.length > 0) {
+        this.activeProyectoId.set(pData[0].id);
       }
-    } else {
-      // Fallback to seed data if error
-      this.proyectos.set(this.initialData.proyectos);
     }
+
+    // 2. Cargar Zonas
+    const { data: zData } = await this.supabase.client.from('zonas').select('*');
+    if (zData) this._zonas.set(zData);
+
+    // 3. Cargar Líneas
+    const { data: lData } = await this.supabase.client.from('lineas').select('*');
+    if (lData) this._lineas.set(lData);
+
+    // 4. Cargar Inspecciones
+    const { data: iData } = await this.supabase.client.from('inspecciones').select('*');
+    if (iData) this._inspecciones.set(iData);
   }
   
   lineas = computed(() => {
@@ -66,139 +73,112 @@ export class DataService {
   totalZonas = computed(() => this.zonas().length);
   totalLineas = computed(() => this.lineas().length);
 
-  // Actions to modify state
-  updateInspectionStatus(inspeccionId: number, newState: string, date: string | null = null) {
-    this._inspecciones.update(insps => insps.map(insp => {
-      if (insp.id === inspeccionId) {
-        return { ...insp, estado: newState, fecha_inspeccion: date };
-      }
-      return insp;
-    }));
-  }
-
-  updateLineProgress(lineaId: number, progress: number) {
-    this._lineas.update(lines => lines.map(line => {
-      if (line.id === lineaId) {
-        return { ...line, porcentaje_completado: progress };
-      }
-      return line;
-    }));
-  }
-
+  // Proyectos CRUD
   async updateProyecto(id: number, data: Partial<Proyecto>) {
-    // Update local state first for immediate UI response
     this.proyectos.update(projs => projs.map(p => p.id === id ? { ...p, ...data } : p));
-    
-    // Push to Supabase
-    const { error } = await this.supabase.client
-      .from('proyectos')
-      .update(data)
-      .eq('id', id);
-      
-    if (error) console.error('Error updating proyecto in Supabase:', error);
+    await this.supabase.client.from('proyectos').update(data).eq('id', id);
   }
 
   async addProyecto(proyecto: Omit<Proyecto, 'id'>) {
-    // Optimistic local ID (will be overridden on reload, but good for current session)
-    const newId = this.generateId(this.proyectos());
-    const newProj = { ...proyecto, id: newId };
-    
-    this.proyectos.update(projs => [...projs, newProj]);
-
-    // Push to Supabase
-    const { data, error } = await this.supabase.client
-      .from('proyectos')
-      .insert(proyecto)
-      .select()
-      .single();
-      
-    if (error) {
-      console.error('Error inserting proyecto in Supabase:', error);
-    } else if (data) {
-      // Update with the actual DB ID
-      this.proyectos.update(projs => projs.map(p => p.id === newId ? data : p));
-      
-      // If this is the first project, set it as active
-      if (this.activeProyectoId() === 0) {
-        this.activeProyectoId.set(data.id);
-      }
+    const { data, error } = await this.supabase.client.from('proyectos').insert(proyecto).select().single();
+    if (data) {
+      this.proyectos.update(projs => [...projs, data]);
+      if (this.activeProyectoId() === 0) this.activeProyectoId.set(data.id);
+    } else {
+      console.error(error);
     }
   }
 
   async deleteProyecto(id: number) {
     this.proyectos.update(projs => projs.filter(p => p.id !== id));
-    
-    // Push to Supabase
-    const { error } = await this.supabase.client
-      .from('proyectos')
-      .delete()
-      .eq('id', id);
-      
-    if (error) console.error('Error deleting proyecto in Supabase:', error);
+    await this.supabase.client.from('proyectos').delete().eq('id', id);
   }
 
   // Zonas CRUD
-  addZona(zona: Omit<Zona, 'id'>) {
-    this._zonas.update(zonas => [...zonas, { ...zona, id: this.generateId(zonas) }]);
+  async addZona(zona: Omit<Zona, 'id'>) {
+    const { data, error } = await this.supabase.client.from('zonas').insert(zona).select().single();
+    if (data) {
+      this._zonas.update(zonas => [...zonas, data]);
+    } else {
+      console.error(error);
+    }
   }
 
-  updateZona(id: number, data: Partial<Zona>) {
+  async updateZona(id: number, data: Partial<Zona>) {
     this._zonas.update(zonas => zonas.map(z => z.id === id ? { ...z, ...data } : z));
+    await this.supabase.client.from('zonas').update(data).eq('id', id);
   }
 
-  deleteZona(id: number) {
+  async deleteZona(id: number) {
     this._zonas.update(zonas => zonas.filter(z => z.id !== id));
-    // Cascade delete lineas
+    await this.supabase.client.from('zonas').delete().eq('id', id);
+    // Cascada: local memory clear
     const lineasToDel = this._lineas().filter(l => l.zona_id === id);
-    lineasToDel.forEach(l => this.deleteLinea(l.id));
-  }
-
-  // Lineas CRUD
-  addLinea(linea: Omit<Linea, 'id'>) {
-    const newLineaId = this.generateId(this._lineas());
-    this._lineas.update(lines => [...lines, { ...linea, id: newLineaId }]);
-    
-    // Auto-generate inspections
-    const pruebas = ['Visual', 'Hidrostática', 'Aire 24h', 'Disparo (Trip)'];
-    const newInspections = pruebas.map(prueba => ({
-      id: 0, // will be replaced
-      linea_id: newLineaId,
-      tipo_prueba: prueba,
-      estado: 'Pendiente',
-      fecha_inspeccion: null
-    }));
-    
-    this._inspecciones.update(insps => {
-      let maxId = this.generateId(insps);
-      const generated = newInspections.map(i => ({ ...i, id: maxId++ }));
-      return [...insps, ...generated];
+    lineasToDel.forEach(l => {
+      this._lineas.update(lines => lines.filter(lx => lx.id !== l.id));
+      this._inspecciones.update(insps => insps.filter(i => i.linea_id !== l.id));
     });
   }
 
-  updateLinea(id: number, data: Partial<Linea>) {
-    this._lineas.update(lines => lines.map(l => l.id === id ? { ...l, ...data } : l));
+  // Lineas CRUD
+  async addLinea(linea: Omit<Linea, 'id'>) {
+    const { data, error } = await this.supabase.client.from('lineas').insert(linea).select().single();
+    if (data) {
+      const newLineaId = data.id;
+      this._lineas.update(lines => [...lines, data]);
+      
+      // Auto-generate inspections for the new line
+      const pruebas = ['Visual', 'Hidrostática', 'Aire 24h', 'Disparo (Trip)'];
+      const newInspections = pruebas.map(prueba => ({
+        linea_id: newLineaId,
+        tipo_prueba: prueba,
+        estado: 'Pendiente',
+        fecha_inspeccion: null
+      }));
+      
+      const { data: insData } = await this.supabase.client.from('inspecciones').insert(newInspections).select();
+      if (insData) {
+        this._inspecciones.update(insps => [...insps, ...insData]);
+      }
+    } else {
+      console.error(error);
+    }
   }
 
-  deleteLinea(id: number) {
+  async updateLinea(id: number, data: Partial<Linea>) {
+    this._lineas.update(lines => lines.map(l => l.id === id ? { ...l, ...data } : l));
+    await this.supabase.client.from('lineas').update(data).eq('id', id);
+  }
+
+  async updateLineProgress(lineaId: number, progress: number) {
+    this.updateLinea(lineaId, { porcentaje_completado: progress });
+  }
+
+  async deleteLinea(id: number) {
     this._lineas.update(lines => lines.filter(l => l.id !== id));
-    // Cascade delete inspections
+    await this.supabase.client.from('lineas').delete().eq('id', id);
     this._inspecciones.update(insps => insps.filter(i => i.linea_id !== id));
   }
 
   // Inspecciones CRUD
-  addInspeccion(inspeccion: Omit<Inspeccion, 'id'>) {
-    this._inspecciones.update(insps => [...insps, { ...inspeccion, id: this.generateId(insps) }]);
+  async addInspeccion(inspeccion: Omit<Inspeccion, 'id'>) {
+    const { data } = await this.supabase.client.from('inspecciones').insert(inspeccion).select().single();
+    if (data) {
+      this._inspecciones.update(insps => [...insps, data]);
+    }
   }
 
-  updateInspeccion(id: number, data: Partial<Inspeccion>) {
+  async updateInspeccion(id: number, data: Partial<Inspeccion>) {
     this._inspecciones.update(insps => insps.map(i => i.id === id ? { ...i, ...data } : i));
+    await this.supabase.client.from('inspecciones').update(data).eq('id', id);
+  }
+  
+  async updateInspectionStatus(inspeccionId: number, newState: string, date: string | null = null) {
+    this.updateInspeccion(inspeccionId, { estado: newState, fecha_inspeccion: date });
   }
 
-  deleteInspeccion(id: number) {
+  async deleteInspeccion(id: number) {
     this._inspecciones.update(insps => insps.filter(i => i.id !== id));
-  }
-
-  private generateId(items: any[]): number {
-    return items.length > 0 ? Math.max(...items.map(i => i.id)) + 1 : 1;
+    await this.supabase.client.from('inspecciones').delete().eq('id', id);
   }
 }
