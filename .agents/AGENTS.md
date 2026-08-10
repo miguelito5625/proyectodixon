@@ -7,3 +7,5 @@
 2. **Mantener Contexto del Proyecto:** Existe un archivo llamado `.agents/project_context.md` que contiene un resumen de la arquitectura, tecnologías y estructura del proyecto. Cada vez que realices cambios significativos en el proyecto (nuevos módulos, nuevas tecnologías, cambios arquitectónicos importantes), debes actualizar obligatoriamente este archivo para reflejar el estado actual del proyecto.
 
 3. **Validación de Compilación (Build Checker):** Antes de indicarle al usuario que has terminado de realizar cambios en el código (ya sean componentes, HTML o TS), debes invocar la skill `build_checker` o ejecutar manualmente `ng build`. Si hay errores de compilación, debes leerlos, solucionarlos por tu cuenta y volver a compilar hasta que el resultado sea exitoso (Exit code 0), ANTES de notificar al usuario.
+
+4. **Sincronización de Base de Datos (Schema Updater):** Siempre que modifiques el archivo `extras/schema.sql` (para añadir, modificar o borrar tablas), debes utilizar la skill `schema_updater` para ejecutar esos comandos en la base de datos de Supabase y asegurar que la nube esté sincronizada con el archivo local.
