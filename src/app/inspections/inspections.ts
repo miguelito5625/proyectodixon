@@ -88,11 +88,10 @@ export interface Inspection {
           </td>
         </ng-container>
 
-        <!-- Status Column -->
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
           <td mat-cell *matCellDef="let row">
-            <mat-chip [color]="getStatusColor(row.status)" highlighted>
+            <mat-chip [ngClass]="getStatusClass(row.status)" highlighted>
               {{row.status || 'Pendiente'}}
             </mat-chip>
           </td>
@@ -184,6 +183,19 @@ export interface Inspection {
     mat-chip {
       font-weight: 500;
     }
+    
+    .status-aprobado {
+      background-color: var(--status-aprobado) !important;
+      color: white !important;
+    }
+    .status-pendiente {
+      background-color: var(--status-pendiente) !important;
+      color: white !important;
+    }
+    .status-rechazado {
+      background-color: var(--status-rechazado) !important;
+      color: white !important;
+    }
   `]
 })
 export class Inspections implements OnInit {
@@ -272,14 +284,14 @@ export class Inspections implements OnInit {
     }
   }
 
-  getStatusColor(status: string): string {
+  getStatusClass(status: string): string {
     const s = (status || '').toLowerCase();
     if (s.includes('aprobado') || s.includes('approved') || s.includes('ok')) {
-      return 'primary'; // Greenish in some themes
-    } else if (s.includes('rechazado') || s.includes('rejected')) {
-      return 'warn'; // Red
+      return 'status-aprobado';
+    } else if (s.includes('rechazado') || s.includes('rejected') || s.includes('reprobada')) {
+      return 'status-rechazado';
     }
-    return 'accent'; // Default for Pending
+    return 'status-pendiente';
   }
 
   openDialog(inspection?: Inspection) {
