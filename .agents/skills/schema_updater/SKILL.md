@@ -24,7 +24,7 @@ Verifica si existe el archivo `supabase/config.toml` (o similar) ejecutando un c
 Dado que el entorno del usuario es Windows (PowerShell), inyecta el contenido del archivo SQL a Supabase utilizando el siguiente comando en la terminal:
 
 ```powershell
-Get-Content extras\schema.sql | npx supabase db psql
+npx supabase db query --file extras/schema.sql --linked
 ```
 
 ## 3. Validación
