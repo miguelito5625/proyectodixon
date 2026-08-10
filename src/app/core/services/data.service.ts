@@ -1,15 +1,17 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, signal, inject } from '@angular/core';
 import { DataSeed, Inspeccion, Linea, Proyecto, Zona } from '../models/data.models';
 // @ts-ignore
 import dbSeed from '../../../../extras/db_seed.json';
+import { SupabaseService } from '../../supabase.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
   private initialData = dbSeed as DataSeed;
+  private supabase = inject(SupabaseService);
 
-  proyectos = signal<Proyecto[]>(this.initialData.proyectos);
+  proyectos = signal<Proyecto[]>([]);
   
   // Writable signals for all data
   private _zonas = signal<Zona[]>(this.initialData.zonas);
@@ -21,6 +23,23 @@ export class DataService {
 
   // Computed signals filtered by active project
   zonas = computed(() => this._zonas().filter(z => z.proyecto_id === this.activeProyectoId()));
+  
+  constructor() {
+    this.loadProyectos();
+  }
+
+  async loadProyectos() {
+    const { data, error } = await this.supabase.client.from('proyectos').select('*');
+    if (!error && data) {
+      this.proyectos.set(data);
+      if (data.length > 0 && this.activeProyectoId() === 0) {
+        this.activeProyectoId.set(data[0].id);
+      }
+    } else {
+      // Fallback to seed data if error
+      this.proyectos.set(this.initialData.proyectos);
+    }
+  }
   
   lineas = computed(() => {
     const activeZonas = this.zonas().map(z => z.id);
@@ -66,17 +85,56 @@ export class DataService {
     }));
   }
 
-  updateProyecto(id: number, data: Partial<Proyecto>) {
+  async updateProyecto(id: number, data: Partial<Proyecto>) {
+    // Update local state first for immediate UI response
     this.proyectos.update(projs => projs.map(p => p.id === id ? { ...p, ...data } : p));
+    
+    // Push to Supabase
+    const { error } = await this.supabase.client
+      .from('proyectos')
+      .update(data)
+      .eq('id', id);
+      
+    if (error) console.error('Error updating proyecto in Supabase:', error);
   }
 
-  addProyecto(proyecto: Omit<Proyecto, 'id'>) {
-    this.proyectos.update(projs => [...projs, { ...proyecto, id: this.generateId(projs) }]);
+  async addProyecto(proyecto: Omit<Proyecto, 'id'>) {
+    // Optimistic local ID (will be overridden on reload, but good for current session)
+    const newId = this.generateId(this.proyectos());
+    const newProj = { ...proyecto, id: newId };
+    
+    this.proyectos.update(projs => [...projs, newProj]);
+
+    // Push to Supabase
+    const { data, error } = await this.supabase.client
+      .from('proyectos')
+      .insert(proyecto)
+      .select()
+      .single();
+      
+    if (error) {
+      console.error('Error inserting proyecto in Supabase:', error);
+    } else if (data) {
+      // Update with the actual DB ID
+      this.proyectos.update(projs => projs.map(p => p.id === newId ? data : p));
+      
+      // If this is the first project, set it as active
+      if (this.activeProyectoId() === 0) {
+        this.activeProyectoId.set(data.id);
+      }
+    }
   }
 
-  deleteProyecto(id: number) {
+  async deleteProyecto(id: number) {
     this.proyectos.update(projs => projs.filter(p => p.id !== id));
-    // We could cascade delete zonas of this proyecto if we want, but for now just the project
+    
+    // Push to Supabase
+    const { error } = await this.supabase.client
+      .from('proyectos')
+      .delete()
+      .eq('id', id);
+      
+    if (error) console.error('Error deleting proyecto in Supabase:', error);
   }
 
   // Zonas CRUD
