@@ -43,19 +43,24 @@ import { FormsModule } from '@angular/forms';
             <h2>FireSafety Ops</h2>
           </div>
           
-          <mat-nav-list>
-            <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" (click)="sidenav.close()">
+          <mat-nav-list class="nav-list">
+            <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" class="nav-item" (click)="sidenav.close()">
               <mat-icon matListItemIcon>dashboard</mat-icon>
               <span matListItemTitle>Dashboard</span>
             </a>
-            <a mat-list-item routerLink="/zonas" routerLinkActive="active-link" (click)="sidenav.close()">
+            <a mat-list-item routerLink="/zonas" routerLinkActive="active-link" class="nav-item" (click)="sidenav.close()">
               <mat-icon matListItemIcon>map</mat-icon>
               <span matListItemTitle>Zonas</span>
             </a>
-            <a mat-list-item routerLink="/inspecciones" routerLinkActive="active-link" (click)="sidenav.close()">
-              <mat-icon matListItemIcon>fact_check</mat-icon>
+            <a mat-list-item routerLink="/lineas" routerLinkActive="active-link" class="nav-item" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>timeline</mat-icon>
+              <span matListItemTitle>Líneas (Permisos)</span>
+            </a>
+            <a mat-list-item routerLink="/inspecciones" routerLinkActive="active-link" class="nav-item" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>list_alt</mat-icon>
               <span matListItemTitle>Inspecciones</span>
             </a>
+            <mat-divider></mat-divider>
             <a mat-list-item routerLink="/reportes" routerLinkActive="active-link" (click)="sidenav.close()">
               <mat-icon matListItemIcon>bar_chart</mat-icon>
               <span matListItemTitle>Reportes</span>

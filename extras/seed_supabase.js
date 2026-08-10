@@ -14,6 +14,22 @@ async function seedDatabase() {
 
         console.log("Iniciando carga a Supabase...");
 
+        // Insert Proyectos
+        for (const p of seed.proyectos) {
+            const { error } = await supabase.from('proyectos').insert({
+                id: p.id,
+                nombre: p.nombre,
+                ahj: p.ahj,
+                general_contractor: p.general_contractor,
+                subcontratista_pci: p.subcontratista_pci,
+                permiso_padre: p.permiso_padre
+            }).select();
+            if (error && error.code !== '23505') {
+                console.error('Error insertando proyecto:', error);
+            }
+        }
+        console.log("Proyectos insertados:", seed.proyectos.length);
+
         // Insert Zonas
         for (const zona of seed.zonas) {
             const { error } = await supabase.from('zonas').insert({
