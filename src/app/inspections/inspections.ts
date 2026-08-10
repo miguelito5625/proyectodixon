@@ -12,7 +12,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { InspectionDialog, InspectionDialogData } from './inspection-dialog';
-import { CatalogItem } from '../settings/catalog-dialog';
+export interface CatalogItem {
+  id: number;
+  name: string;
+}
 
 export interface Inspection {
   id: number;

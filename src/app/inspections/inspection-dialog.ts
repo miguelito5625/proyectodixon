@@ -11,7 +11,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Inspection } from './inspections';
-import { CatalogDialog, CatalogDialogData, CatalogItem } from '../settings/catalog-dialog';
+import { CatalogItem } from './inspections';
 import { SupabaseService } from '../supabase.service';
 
 export interface InspectionDialogData {
@@ -250,32 +250,7 @@ export class InspectionDialog {
   }
 
   addNewCatalogItem(tableName: string, title: string, controlName: string, localArray: CatalogItem[], listName: string) {
-    const dialogRef = this.dialog.open(CatalogDialog, {
-      width: '400px',
-      data: { title, item: null } as CatalogDialogData
-    });
-
-    dialogRef.afterClosed().subscribe(async (result) => {
-      if (result && result.name) {
-        try {
-          const { data, error } = await this.supabase.client
-            .from(tableName)
-            .insert({ name: result.name })
-            .select('*')
-            .single();
-            
-          if (error) throw error;
-          
-          if (data) {
-            localArray.push(data as CatalogItem);
-            this.filterData(listName, { target: { value: '' } } as any); // Refresh filter
-            this.form.get(controlName)?.setValue(data.id);
-          }
-        } catch (error) {
-          console.error(`Error saving ${tableName}:`, error);
-        }
-      }
-    });
+    console.warn('La funcionalidad de agregar catálogos ha sido removida.');
   }
 
   save() {
