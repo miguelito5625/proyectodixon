@@ -1,11 +1,142 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTableModule } from '@angular/material/table';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SupabaseService } from '../supabase.service';
-import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { MatDialog, MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { FormsModule } from '@angular/forms';
+import { DataService } from '../core/services/data.service';
+import { Inspeccion, Linea, Zona } from '../core/models/data.models';
+import { Inject } from '@angular/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+@Component({
+  selector: 'app-date-picker-dialog',
+  standalone: true,
+  imports: [MatDialogModule, MatButtonModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, MatInputModule, FormsModule],
+  template: `
+    <h2 mat-dialog-title>Fecha de Inspección</h2>
+    <mat-dialog-content>
+      <mat-form-field appearance="fill" style="width: 100%; margin-top: 8px;">
+        <mat-label>Seleccione una fecha</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate">
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-flat-button color="primary" [mat-dialog-close]="selectedDate" [disabled]="!selectedDate">Guardar</button>
+    </mat-dialog-actions>
+  `
+})
+export class DatePickerDialog {
+  selectedDate: Date = new Date();
+}
+
+@Component({
+  selector: 'app-note-dialog',
+  standalone: true,
+  imports: [MatDialogModule, MatButtonModule],
+  template: `
+    <h2 mat-dialog-title>Notas de Línea</h2>
+    <mat-dialog-content>
+      <p style="white-space: pre-wrap; line-height: 1.5;">{{ data.notas }}</p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close color="primary">Cerrar</button>
+    </mat-dialog-actions>
+  `
+})
+export class NoteDialog {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { notas: string }) {}
+}
+
+@Component({
+  selector: 'app-inspection-dropdown',
+  standalone: true,
+  imports: [CommonModule, MatSelectModule, MatFormFieldModule, FormsModule],
+  template: `
+    @if (inspeccion) {
+      <mat-form-field appearance="outline" class="status-dropdown" [ngClass]="getStatusClass(inspeccion.estado)">
+        <mat-select [ngModel]="inspeccion.estado" (ngModelChange)="onStatusChange($event)">
+          <mat-option value="Pendiente">Pendiente</mat-option>
+          <mat-option value="Aprobado">Aprobado</mat-option>
+          <mat-option value="Rechazado">Rechazado</mat-option>
+        </mat-select>
+      </mat-form-field>
+      @if (inspeccion.fecha_inspeccion) {
+        <div class="date-label">
+          {{ inspeccion.fecha_inspeccion | date:'shortDate' }}
+        </div>
+      }
+    } @else {
+      <span class="text-disabled">N/A</span>
+    }
+  `,
+  styles: [`
+    .status-dropdown {
+      width: 120px;
+    }
+    .status-dropdown .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+    .status-aprobado-field {
+      --mdc-outlined-text-field-outline-color: var(--status-aprobado);
+      --mdc-outlined-text-field-focus-outline-color: var(--status-aprobado);
+    }
+    .status-pendiente-field {
+      --mdc-outlined-text-field-outline-color: var(--status-pendiente);
+      --mdc-outlined-text-field-focus-outline-color: var(--status-pendiente);
+    }
+    .status-rechazado-field {
+      --mdc-outlined-text-field-outline-color: var(--status-rechazado);
+      --mdc-outlined-text-field-focus-outline-color: var(--status-rechazado);
+    }
+    .date-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      text-align: center;
+    }
+  `]
+})
+export class InspectionDropdown {
+  @Input() inspeccion?: Inspeccion;
+  
+  private dataService = inject(DataService);
+  private dialog = inject(MatDialog);
+
+  getStatusClass(estado: string) {
+    if (estado === 'Aprobado' || estado === 'Aprobada') return 'status-aprobado-field';
+    if (estado === 'Pendiente') return 'status-pendiente-field';
+    if (estado === 'Rechazado' || estado === 'Reprobada') return 'status-rechazado-field';
+    return '';
+  }
+
+  onStatusChange(newState: string) {
+    if (!this.inspeccion) return;
+    
+    if (newState === 'Aprobado') {
+      const dialogRef = this.dialog.open(DatePickerDialog, {
+        width: '350px'
+      });
+      dialogRef.afterClosed().subscribe(date => {
+        if (date) {
+          this.dataService.updateInspectionStatus(this.inspeccion!.id, newState, date.toISOString());
+        }
+      });
+    } else {
+      this.dataService.updateInspectionStatus(this.inspeccion.id, newState, null);
+    }
+  }
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -13,249 +144,255 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
   imports: [
     CommonModule,
     MatCardModule,
+    MatExpansionModule,
+    MatTableModule,
+    MatSelectModule,
+    MatInputModule,
+    MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
-    BaseChartDirective
+    MatDialogModule,
+    FormsModule,
+    InspectionDropdown
   ],
   template: `
     <div class="dashboard-header">
-      <h1>Dashboard Operativo</h1>
-      <p>Resumen general del estado del proyecto FireSafety Ops</p>
+      <h1>Panel de Control</h1>
+      <p>Resumen de progreso e inspecciones</p>
     </div>
 
-    <!-- Metrics Cards -->
-    <div class="cards-grid">
-      <mat-card class="metric-card">
+    <div class="summary-cards">
+      <mat-card class="summary-card">
         <mat-card-header>
-          <div mat-card-avatar class="card-icon inspections-icon">
-            <mat-icon>fact_check</mat-icon>
-          </div>
-          <mat-card-title>Inspecciones Totales</mat-card-title>
-          <mat-card-subtitle>Registradas en el sistema</mat-card-subtitle>
+          <mat-card-title>Zonas Totales</mat-card-title>
+          <mat-icon class="card-icon" color="primary">map</mat-icon>
         </mat-card-header>
         <mat-card-content>
-          <div class="metric-value" *ngIf="!isLoadingInspections(); else loading">
-            {{ totalInspections() }}
-          </div>
+          <h2 class="card-value">{{ dataService.totalZonas() }}</h2>
         </mat-card-content>
       </mat-card>
 
-      <mat-card class="metric-card">
+      <mat-card class="summary-card">
         <mat-card-header>
-          <div mat-card-avatar class="card-icon pending-icon">
-            <mat-icon>schedule</mat-icon>
-          </div>
-          <mat-card-title>Inspecciones Pendientes</mat-card-title>
-          <mat-card-subtitle>Requieren atención</mat-card-subtitle>
+          <mat-card-title>Líneas Totales</mat-card-title>
+          <mat-icon class="card-icon" color="primary">timeline</mat-icon>
         </mat-card-header>
         <mat-card-content>
-          <div class="metric-value" *ngIf="!isLoadingInspections(); else loading">
-            {{ pendingInspections() }}
-          </div>
+          <h2 class="card-value">{{ dataService.totalLineas() }}</h2>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-header>
+          <mat-card-title>Progreso Global</mat-card-title>
+          <mat-icon class="card-icon" color="primary">trending_up</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <h2 class="card-value">{{ (dataService.progresoGlobal() * 100).toFixed(1) }}%</h2>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-header>
+          <mat-card-title>Insp. Aprobadas</mat-card-title>
+          <mat-icon class="card-icon" color="primary">check_circle</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <h2 class="card-value">{{ dataService.inspeccionesAprobadas() }}</h2>
         </mat-card-content>
       </mat-card>
     </div>
 
-    <!-- Charts Section -->
-    <div class="charts-grid">
+    <div class="grid-section">
+      <h2>Zonas y Líneas</h2>
       
-      <!-- Inspections Status Chart -->
-      <mat-card class="chart-card">
-        <mat-card-header>
-          <mat-card-title>Estatus de Inspecciones</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="chart-container" *ngIf="!isLoadingCharts(); else loading">
-            <canvas baseChart
-              [data]="pieChartData"
-              [type]="pieChartType"
-              [options]="pieChartOptions">
-            </canvas>
-          </div>
-        </mat-card-content>
-      </mat-card>
+      <mat-accordion multi>
+        @for (zona of dataService.zonas(); track zona.id) {
+          <mat-expansion-panel class="zona-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Zona {{ zona.numero_zona }} ({{ zona.nivel }})</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
 
+            <div class="lineas-container">
+              <table class="lineas-table">
+                <thead>
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Permiso</th>
+                    <th>Avance Físico</th>
+                    <th>% Completado</th>
+                    <th>Visual</th>
+                    <th>Hidrostática</th>
+                    <th>Aire 24h</th>
+                    <th>Disparo (Trip)</th>
+                    <th>Notas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (linea of getLineasForZona(zona.id); track linea.id) {
+                    <tr>
+                      <td>{{ linea.tipo }}</td>
+                      <td>{{ linea.permiso_especifico || 'N/A' }}</td>
+                      <td>
+                        <mat-icon [class.text-success]="linea.avance_fisico" [class.text-disabled]="!linea.avance_fisico">
+                          {{ linea.avance_fisico ? 'check_circle' : 'cancel' }}
+                        </mat-icon>
+                      </td>
+                      <td>
+                        <mat-form-field appearance="outline" class="dense-field progress-field">
+                          <input matInput type="number" min="0" max="1" step="0.1" 
+                                 [ngModel]="linea.porcentaje_completado" 
+                                 (ngModelChange)="updateProgress(linea.id, $event)">
+                        </mat-form-field>
+                      </td>
+                      
+                      <!-- Tests columns -->
+                      <td>
+                        <app-inspection-dropdown [inspeccion]="getInspection(linea.id, 'Visual')"></app-inspection-dropdown>
+                      </td>
+                      <td>
+                        <app-inspection-dropdown [inspeccion]="getInspection(linea.id, 'Hidrostática')"></app-inspection-dropdown>
+                      </td>
+                      <td>
+                        <app-inspection-dropdown [inspeccion]="getInspection(linea.id, 'Aire 24h')"></app-inspection-dropdown>
+                      </td>
+                      <td>
+                        <app-inspection-dropdown [inspeccion]="getInspection(linea.id, 'Disparo (Trip)')"></app-inspection-dropdown>
+                      </td>
+                      
+                      <td>
+                        <button mat-icon-button (click)="openNotes(linea.notas)" color="primary">
+                          <mat-icon>comment</mat-icon>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                  @if (getLineasForZona(zona.id).length === 0) {
+                    <tr>
+                      <td colspan="9" class="text-center">No hay líneas registradas en esta zona.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </mat-expansion-panel>
+        }
+      </mat-accordion>
     </div>
-
-    <ng-template #loading>
-      <div class="spinner-container">
-        <mat-spinner diameter="40"></mat-spinner>
-      </div>
-    </ng-template>
   `,
   styles: [`
     .dashboard-header {
       margin-bottom: 24px;
     }
-
     .dashboard-header h1 {
       margin: 0;
-      color: var(--mat-sys-on-surface);
+      color: var(--primary-color);
+    }
+    .dashboard-header p {
+      margin: 4px 0 0;
+      color: var(--text-secondary);
     }
     
-    .dashboard-header p {
-      color: var(--mat-sys-on-surface-variant);
-      margin-top: 8px;
-    }
-
-    .cards-grid {
+    .summary-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 24px;
-      margin-bottom: 24px;
+      margin-bottom: 32px;
     }
-
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-      gap: 24px;
-    }
-
-    .metric-card, .chart-card {
-      padding: 16px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    .summary-card {
       border-radius: 12px;
     }
-    
-    .metric-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--mat-sys-elevation-level3);
+    .summary-card mat-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-
     .card-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      margin-right: 16px;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      opacity: 0.8;
     }
-
-    .card-icon mat-icon {
-      color: white;
-    }
-
-    .inspections-icon { background-color: var(--mat-sys-primary); }
-    .pending-icon { background-color: var(--mat-sys-error); }
-
-    .metric-value {
-      font-size: 3rem;
+    .card-value {
+      font-size: 36px;
       font-weight: 300;
-      margin-top: 16px;
-      color: var(--mat-sys-on-surface);
-      text-align: center;
+      margin: 16px 0 0;
+      color: var(--text-primary);
     }
     
-    .spinner-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-      min-height: 200px;
+    .grid-section h2 {
+      margin-bottom: 16px;
+      color: var(--primary-color);
     }
-
-    .chart-container {
-      position: relative;
-      height: 300px;
+    
+    .zona-panel {
+      margin-bottom: 12px;
+      border-radius: 8px !important;
+    }
+    
+    .lineas-container {
+      overflow-x: auto;
+      padding: 8px 0;
+    }
+    
+    .lineas-table {
       width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+    .lineas-table th, .lineas-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+      vertical-align: middle;
+    }
+    .lineas-table th {
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 14px;
+      background-color: #fafafa;
+    }
+    .lineas-table td {
+      font-size: 14px;
+    }
+    
+    .text-success { color: var(--status-aprobado); }
+    .text-disabled { color: #bdbdbd; }
+    .text-center { text-align: center; }
+    
+    .dense-field {
+      width: 80px;
       margin-top: 16px;
+    }
+    .dense-field .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+    .progress-field input {
+      text-align: center;
     }
   `]
 })
-export class Dashboard implements OnInit {
-  private supabase = inject(SupabaseService);
+export class Dashboard {
+  public dataService = inject(DataService);
+  private dialog = inject(MatDialog);
 
-  totalInspections = signal(0);
-  pendingInspections = signal(0);
-  
-  isLoadingInspections = signal(true);
-  isLoadingCharts = signal(true);
-
-  // --- PIE CHART CONFIG ---
-  public pieChartType: ChartType = 'doughnut';
-  public pieChartOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: {
-      duration: 1500,
-      easing: 'easeOutQuart'
-    },
-    plugins: {
-      legend: { position: 'right' }
-    }
-  };
-  public pieChartData: ChartData<'doughnut', number[], string | string[]> = {
-    labels: ['Aprobada', 'Pendiente', 'Rechazada'],
-    datasets: [{
-      data: [0, 0, 0],
-      backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
-      hoverBackgroundColor: ['#66bb6a', '#ffb74d', '#e57373']
-    }]
-  };
-
-  ngOnInit() {
-    this.loadMetrics();
-    this.loadChartData();
+  getLineasForZona(zonaId: number): Linea[] {
+    return this.dataService.lineas().filter(l => l.zona_id === zonaId);
   }
 
-  async loadMetrics() {
-    this.isLoadingInspections.set(true);
-
-    try {
-      // Get total inspections
-      const { count: insCount, error: insError } = await this.supabase.client
-        .from('inspections')
-        .select('*', { count: 'exact', head: true });
-        
-      if (!insError) this.totalInspections.set(insCount || 0);
-
-      // Get pending inspections
-      const { count: pendCount, error: pendError } = await this.supabase.client
-        .from('inspections')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'Pendiente');
-        
-      if (!pendError) this.pendingInspections.set(pendCount || 0);
-      
-    } catch (error) {
-      console.error('Exception fetching metrics:', error);
-    } finally {
-      this.isLoadingInspections.set(false);
-    }
+  getInspection(lineaId: number, tipo: string): Inspeccion | undefined {
+    return this.dataService.inspecciones().find(i => i.linea_id === lineaId && i.tipo_prueba === tipo);
   }
 
-  async loadChartData() {
-    this.isLoadingCharts.set(true);
-    try {
-      // Fetch Inspections Status
-      const { data: insData, error: insError } = await this.supabase.client
-        .from('inspections')
-        .select('status');
+  updateProgress(lineaId: number, progress: number) {
+    this.dataService.updateLineProgress(lineaId, progress);
+  }
 
-      if (!insError && insData) {
-        let aprobadas = 0;
-        let pendientes = 0;
-        let rechazadas = 0;
-
-        insData.forEach(i => {
-          if (i.status === 'Aprobada') aprobadas++;
-          else if (i.status === 'Rechazada') rechazadas++;
-          else pendientes++;
-        });
-
-        this.pieChartData = {
-          labels: ['Aprobada', 'Pendiente', 'Rechazada'],
-          datasets: [{
-            data: [aprobadas, pendientes, rechazadas],
-            backgroundColor: ['#4caf50', '#ff9800', '#f44336']
-          }]
-        };
-      }
-    } catch (error) {
-      console.error('Exception fetching chart data:', error);
-    } finally {
-      this.isLoadingCharts.set(false);
-    }
+  openNotes(notas: string | null) {
+    this.dialog.open(NoteDialog, {
+      width: '400px',
+      data: { notas: notas || 'No hay notas registradas para esta línea.' }
+    });
   }
 }

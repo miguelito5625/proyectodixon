@@ -1,4 +1,4 @@
-import { Component, inject, Renderer2, signal } from '@angular/core';
+import { Component, inject, Renderer2, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -10,6 +10,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { SupabaseService } from './supabase.service';
+import { DataService } from './core/services/data.service';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +28,9 @@ import { SupabaseService } from './supabase.service';
     MatSidenavModule,
     MatListModule,
     MatDividerModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatSelectModule,
+    MatFormFieldModule
   ],
   template: `
     @if(supabase.session()) {
@@ -33,21 +38,29 @@ import { SupabaseService } from './supabase.service';
         <mat-sidenav #sidenav mode="over" opened="false">
           <div class="sidenav-header">
             <mat-icon>local_fire_department</mat-icon>
-            <h2>FireSafety Ops</h2>
+            <h2>DataHall Altas/Bajas</h2>
           </div>
           
           <mat-nav-list>
-            <div mat-subheader>Principal</div>
             <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" (click)="sidenav.close()">
               <mat-icon matListItemIcon>dashboard</mat-icon>
               <span matListItemTitle>Dashboard</span>
             </a>
-
-            <mat-divider></mat-divider>
-            <div mat-subheader>Operación</div>
-            <a mat-list-item routerLink="/inspections" routerLinkActive="active-link" (click)="sidenav.close()">
+            <a mat-list-item routerLink="/zonas" routerLinkActive="active-link" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>map</mat-icon>
+              <span matListItemTitle>Zonas</span>
+            </a>
+            <a mat-list-item routerLink="/inspecciones" routerLinkActive="active-link" (click)="sidenav.close()">
               <mat-icon matListItemIcon>fact_check</mat-icon>
               <span matListItemTitle>Inspecciones</span>
+            </a>
+            <a mat-list-item routerLink="/reportes" routerLinkActive="active-link" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>bar_chart</mat-icon>
+              <span matListItemTitle>Reportes</span>
+            </a>
+            <a mat-list-item routerLink="/configuracion" routerLinkActive="active-link" (click)="sidenav.close()">
+              <mat-icon matListItemIcon>settings</mat-icon>
+              <span matListItemTitle>Configuración</span>
             </a>
           </mat-nav-list>
         </mat-sidenav>
@@ -61,7 +74,16 @@ import { SupabaseService } from './supabase.service';
               (click)="sidenav.toggle()">
               <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
             </button>
-            <span>FireSafety Ops</span>
+            <span class="spacer"></span>
+            
+            <mat-form-field appearance="outline" class="project-selector">
+              <mat-select [value]="activeProyecto()?.id">
+                @for(proyecto of proyectos(); track proyecto.id) {
+                  <mat-option [value]="proyecto.id">{{ proyecto.nombre }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            
             <span class="spacer"></span>
             
             <!-- Animated Dark/Light Mode Toggle -->
@@ -154,9 +176,16 @@ import { SupabaseService } from './supabase.service';
     .theme-icon {
       transition: transform 0.5s ease-in-out, opacity 0.3s ease;
     }
-    
     .theme-icon.rotated {
       transform: rotate(360deg);
+    }
+    
+    .project-selector {
+      width: 400px;
+      margin-top: 16px;
+    }
+    .project-selector .mat-mdc-form-field-subscript-wrapper {
+      display: none;
     }
   `]
 })
@@ -165,6 +194,10 @@ export class App {
   private renderer = inject(Renderer2);
   private router = inject(Router);
   public supabase = inject(SupabaseService);
+  public dataService = inject(DataService);
+  
+  proyectos = this.dataService.proyectos;
+  activeProyecto = computed(() => this.proyectos().length > 0 ? this.proyectos()[0] : null);
   
   isHandset = signal(false);
   isDarkMode = signal(false);

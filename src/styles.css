@@ -1,1 +1,68 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Material Theme and Fonts */
+@import '@angular/material/prebuilt-themes/azure-blue.css';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+:root {
+  --primary-color: #0d47a1; /* Deep blue */
+  --secondary-color: #546e7a; /* Gray blue */
+  --background-color: #f5f7fa; /* Light gray */
+  --surface-color: #ffffff;
+  --text-primary: #263238;
+  --text-secondary: #546e7a;
+  
+  --status-aprobado: #4caf50;
+  --status-pendiente: #ff9800;
+  --status-rechazado: #f44336;
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+/* Status Chips/Labels */
+.status-label {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  text-align: center;
+}
+.status-aprobado { background-color: var(--status-aprobado); }
+.status-pendiente { background-color: var(--status-pendiente); }
+.status-rechazado { background-color: var(--status-rechazado); }
+
+/* Layout utilities */
+.flex-spacer {
+  flex: 1 1 auto;
+}
+
+/* Custom Scrollbar for inner components */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}

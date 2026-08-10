@@ -1,0 +1,1200 @@
+{
+  "proyectos": [
+    {
+      "id": 1,
+      "nombre": "25410 Meadowdale Drive, Chantilly, Virginia 20152 — IAD 158 (Data Center)",
+      "ahj": "Loudoun County Fire Marshal's Office (Plans Review Section)",
+      "general_contractor": "Clark Construction",
+      "subcontratista_pci": "American Fire Systems",
+      "permiso_padre": "FIREC-2026-003725 — Rev. 4 aprobada 18/06/2026"
+    }
+  ],
+  "zonas": [
+    {
+      "id": 1,
+      "proyecto_id": 1,
+      "nivel": "Nivel 1",
+      "numero_zona": 2
+    },
+    {
+      "id": 2,
+      "proyecto_id": 1,
+      "nivel": "Nivel 1",
+      "numero_zona": 3
+    },
+    {
+      "id": 3,
+      "proyecto_id": 1,
+      "nivel": "Nivel 1",
+      "numero_zona": 4
+    },
+    {
+      "id": 4,
+      "proyecto_id": 1,
+      "nivel": "Nivel 1",
+      "numero_zona": 5
+    },
+    {
+      "id": 5,
+      "proyecto_id": 1,
+      "nivel": "Nivel 1",
+      "numero_zona": 6
+    },
+    {
+      "id": 6,
+      "proyecto_id": 1,
+      "nivel": "Nivel 1",
+      "numero_zona": 7
+    },
+    {
+      "id": 7,
+      "proyecto_id": 1,
+      "nivel": "Nivel 2",
+      "numero_zona": 8
+    },
+    {
+      "id": 8,
+      "proyecto_id": 1,
+      "nivel": "Nivel 2",
+      "numero_zona": 9
+    },
+    {
+      "id": 9,
+      "proyecto_id": 1,
+      "nivel": "Nivel 2",
+      "numero_zona": 10
+    },
+    {
+      "id": 10,
+      "proyecto_id": 1,
+      "nivel": "Nivel 2",
+      "numero_zona": 11
+    },
+    {
+      "id": 11,
+      "proyecto_id": 1,
+      "nivel": "Nivel 2",
+      "numero_zona": 12
+    },
+    {
+      "id": 12,
+      "proyecto_id": 1,
+      "nivel": "Nivel 2",
+      "numero_zona": 13
+    }
+  ],
+  "lineas": [
+    {
+      "id": 1,
+      "zona_id": 1,
+      "tipo": "Altas (Upright)",
+      "permiso_especifico": "FIREC-2026-014401",
+      "avance_fisico": true,
+      "porcentaje_completado": 0.0,
+      "notas": "Avance registrado en el job log original (tubería alta instalada, 24/jun). Confirmar en campo."
+    },
+    {
+      "id": 2,
+      "zona_id": 1,
+      "tipo": "Bajas (Flex/Cielo)",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Línea baja sin avance confirmado — pendiente de verificar en campo."
+    },
+    {
+      "id": 3,
+      "zona_id": 2,
+      "tipo": "Altas (Upright)",
+      "permiso_especifico": "FIREC-2026-014403",
+      "avance_fisico": true,
+      "porcentaje_completado": 0.0,
+      "notas": "Avance registrado en el job log original (tubería alta instalada, 24/jun). Confirmar en campo."
+    },
+    {
+      "id": 4,
+      "zona_id": 2,
+      "tipo": "Bajas (Flex/Cielo)",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Línea baja sin avance confirmado — pendiente de verificar en campo."
+    },
+    {
+      "id": 5,
+      "zona_id": 3,
+      "tipo": "Altas (Upright)",
+      "permiso_especifico": "FIREC-2026-014407",
+      "avance_fisico": true,
+      "porcentaje_completado": 0.0,
+      "notas": "Avance registrado en el job log original (tubería alta instalada, 24/jun). Confirmar en campo."
+    },
+    {
+      "id": 6,
+      "zona_id": 3,
+      "tipo": "Bajas (Flex/Cielo)",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Línea baja sin avance confirmado — pendiente de verificar en campo."
+    },
+    {
+      "id": 7,
+      "zona_id": 4,
+      "tipo": "Altas (Upright)",
+      "permiso_especifico": "FIREC-2026-014409",
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Sin avance físico registrado en ninguna línea al 05/08/2026."
+    },
+    {
+      "id": 8,
+      "zona_id": 4,
+      "tipo": "Bajas (Flex/Cielo)",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Sin avance físico registrado en ninguna línea al 05/08/2026."
+    },
+    {
+      "id": 9,
+      "zona_id": 5,
+      "tipo": "Altas (Upright)",
+      "permiso_especifico": "FIREC-2026-014412",
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Sin avance físico registrado en ninguna línea al 05/08/2026."
+    },
+    {
+      "id": 10,
+      "zona_id": 5,
+      "tipo": "Bajas (Flex/Cielo)",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Sin avance físico registrado en ninguna línea al 05/08/2026."
+    },
+    {
+      "id": 11,
+      "zona_id": 6,
+      "tipo": "Altas (Upright)",
+      "permiso_especifico": "FIREC-2026-014416",
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Sin avance físico registrado en ninguna línea al 05/08/2026."
+    },
+    {
+      "id": 12,
+      "zona_id": 6,
+      "tipo": "Bajas (Flex/Cielo)",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Sin avance físico registrado en ninguna línea al 05/08/2026."
+    },
+    {
+      "id": 13,
+      "zona_id": 7,
+      "tipo": "Altas (Upright)",
+      "permiso_especifico": "FIREC-2026-014400",
+      "avance_fisico": true,
+      "porcentaje_completado": 0.0,
+      "notas": "Avance registrado en el job log original (tubería alta instalada, 24/jun). Confirmar en campo."
+    },
+    {
+      "id": 14,
+      "zona_id": 7,
+      "tipo": "Bajas (Flex/Cielo)",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Línea baja sin avance confirmado — pendiente de verificar en campo."
+    },
+    {
+      "id": 15,
+      "zona_id": 8,
+      "tipo": "Altas (Upright)",
+      "permiso_especifico": "FIREC-2026-014402",
+      "avance_fisico": true,
+      "porcentaje_completado": 0.0,
+      "notas": "Avance registrado en el job log original (tubería alta instalada, 24/jun). Confirmar en campo."
+    },
+    {
+      "id": 16,
+      "zona_id": 8,
+      "tipo": "Bajas (Flex/Cielo)",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Línea baja sin avance confirmado — pendiente de verificar en campo."
+    },
+    {
+      "id": 17,
+      "zona_id": 9,
+      "tipo": "Altas (Upright)",
+      "permiso_especifico": "FIREC-2026-014404",
+      "avance_fisico": true,
+      "porcentaje_completado": 0.0,
+      "notas": "Avance registrado en el job log original (tubería alta instalada, 24/jun). Confirmar en campo."
+    },
+    {
+      "id": 18,
+      "zona_id": 9,
+      "tipo": "Bajas (Flex/Cielo)",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Línea baja sin avance confirmado — pendiente de verificar en campo."
+    },
+    {
+      "id": 19,
+      "zona_id": 10,
+      "tipo": "Altas (Upright)",
+      "permiso_especifico": "FIREC-2026-014408",
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Sin avance físico registrado en ninguna línea al 05/08/2026."
+    },
+    {
+      "id": 20,
+      "zona_id": 10,
+      "tipo": "Bajas (Flex/Cielo)",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Sin avance físico registrado en ninguna línea al 05/08/2026."
+    },
+    {
+      "id": 21,
+      "zona_id": 11,
+      "tipo": "Altas (Upright)",
+      "permiso_especifico": "FIREC-2026-014410",
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Sin avance físico registrado en ninguna línea al 05/08/2026."
+    },
+    {
+      "id": 22,
+      "zona_id": 11,
+      "tipo": "Bajas (Flex/Cielo)",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Sin avance físico registrado en ninguna línea al 05/08/2026."
+    },
+    {
+      "id": 23,
+      "zona_id": 12,
+      "tipo": "Altas (Upright)",
+      "permiso_especifico": "FIREC-2026-014414",
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Sin avance físico registrado en ninguna línea al 05/08/2026."
+    },
+    {
+      "id": 24,
+      "zona_id": 12,
+      "tipo": "Bajas (Flex/Cielo)",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": "Sin avance físico registrado en ninguna línea al 05/08/2026."
+    },
+    {
+      "id": 25,
+      "zona_id": 12,
+      "tipo": "Aprobada / Sí — inspección aprobada o avance confirmado.",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": null
+    },
+    {
+      "id": 26,
+      "zona_id": 12,
+      "tipo": "Reprobada — requiere corrección.",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": null
+    },
+    {
+      "id": 27,
+      "zona_id": 12,
+      "tipo": "Programada / Parcial — agendada o en progreso.",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": null
+    },
+    {
+      "id": 28,
+      "zona_id": 12,
+      "tipo": "Pendiente / No — aún sin avance ni programar.",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": null
+    },
+    {
+      "id": 29,
+      "zona_id": 12,
+      "tipo": "Celda editable — actualizar conforme avance el trabajo.",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": null
+    },
+    {
+      "id": 30,
+      "zona_id": 12,
+      "tipo": "Celda con fórmula automática — no editar manualmente.",
+      "permiso_especifico": null,
+      "avance_fisico": false,
+      "porcentaje_completado": 0.0,
+      "notas": null
+    }
+  ],
+  "inspecciones": [
+    {
+      "id": 1,
+      "linea_id": 1,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 2,
+      "linea_id": 1,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 3,
+      "linea_id": 1,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 4,
+      "linea_id": 1,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 5,
+      "linea_id": 2,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 6,
+      "linea_id": 2,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 7,
+      "linea_id": 2,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 8,
+      "linea_id": 2,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 9,
+      "linea_id": 3,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 10,
+      "linea_id": 3,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 11,
+      "linea_id": 3,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 12,
+      "linea_id": 3,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 13,
+      "linea_id": 4,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 14,
+      "linea_id": 4,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 15,
+      "linea_id": 4,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 16,
+      "linea_id": 4,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 17,
+      "linea_id": 5,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 18,
+      "linea_id": 5,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 19,
+      "linea_id": 5,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 20,
+      "linea_id": 5,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 21,
+      "linea_id": 6,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 22,
+      "linea_id": 6,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 23,
+      "linea_id": 6,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 24,
+      "linea_id": 6,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 25,
+      "linea_id": 7,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 26,
+      "linea_id": 7,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 27,
+      "linea_id": 7,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 28,
+      "linea_id": 7,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 29,
+      "linea_id": 8,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 30,
+      "linea_id": 8,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 31,
+      "linea_id": 8,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 32,
+      "linea_id": 8,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 33,
+      "linea_id": 9,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 34,
+      "linea_id": 9,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 35,
+      "linea_id": 9,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 36,
+      "linea_id": 9,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 37,
+      "linea_id": 10,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 38,
+      "linea_id": 10,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 39,
+      "linea_id": 10,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 40,
+      "linea_id": 10,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 41,
+      "linea_id": 11,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 42,
+      "linea_id": 11,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 43,
+      "linea_id": 11,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 44,
+      "linea_id": 11,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 45,
+      "linea_id": 12,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 46,
+      "linea_id": 12,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 47,
+      "linea_id": 12,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 48,
+      "linea_id": 12,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 49,
+      "linea_id": 13,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 50,
+      "linea_id": 13,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 51,
+      "linea_id": 13,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 52,
+      "linea_id": 13,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 53,
+      "linea_id": 14,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 54,
+      "linea_id": 14,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 55,
+      "linea_id": 14,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 56,
+      "linea_id": 14,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 57,
+      "linea_id": 15,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 58,
+      "linea_id": 15,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 59,
+      "linea_id": 15,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 60,
+      "linea_id": 15,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 61,
+      "linea_id": 16,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 62,
+      "linea_id": 16,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 63,
+      "linea_id": 16,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 64,
+      "linea_id": 16,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 65,
+      "linea_id": 17,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 66,
+      "linea_id": 17,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 67,
+      "linea_id": 17,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 68,
+      "linea_id": 17,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 69,
+      "linea_id": 18,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 70,
+      "linea_id": 18,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 71,
+      "linea_id": 18,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 72,
+      "linea_id": 18,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 73,
+      "linea_id": 19,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 74,
+      "linea_id": 19,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 75,
+      "linea_id": 19,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 76,
+      "linea_id": 19,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 77,
+      "linea_id": 20,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 78,
+      "linea_id": 20,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 79,
+      "linea_id": 20,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 80,
+      "linea_id": 20,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 81,
+      "linea_id": 21,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 82,
+      "linea_id": 21,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 83,
+      "linea_id": 21,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 84,
+      "linea_id": 21,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 85,
+      "linea_id": 22,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 86,
+      "linea_id": 22,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 87,
+      "linea_id": 22,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 88,
+      "linea_id": 22,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 89,
+      "linea_id": 23,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 90,
+      "linea_id": 23,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 91,
+      "linea_id": 23,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 92,
+      "linea_id": 23,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 93,
+      "linea_id": 24,
+      "tipo_prueba": "Visual",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 94,
+      "linea_id": 24,
+      "tipo_prueba": "Hidrostática",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 95,
+      "linea_id": 24,
+      "tipo_prueba": "Aire 24h",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 96,
+      "linea_id": 24,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": "Pendiente",
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 97,
+      "linea_id": 25,
+      "tipo_prueba": "Visual",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 98,
+      "linea_id": 25,
+      "tipo_prueba": "Hidrostática",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 99,
+      "linea_id": 25,
+      "tipo_prueba": "Aire 24h",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 100,
+      "linea_id": 25,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 101,
+      "linea_id": 26,
+      "tipo_prueba": "Visual",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 102,
+      "linea_id": 26,
+      "tipo_prueba": "Hidrostática",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 103,
+      "linea_id": 26,
+      "tipo_prueba": "Aire 24h",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 104,
+      "linea_id": 26,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 105,
+      "linea_id": 27,
+      "tipo_prueba": "Visual",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 106,
+      "linea_id": 27,
+      "tipo_prueba": "Hidrostática",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 107,
+      "linea_id": 27,
+      "tipo_prueba": "Aire 24h",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 108,
+      "linea_id": 27,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 109,
+      "linea_id": 28,
+      "tipo_prueba": "Visual",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 110,
+      "linea_id": 28,
+      "tipo_prueba": "Hidrostática",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 111,
+      "linea_id": 28,
+      "tipo_prueba": "Aire 24h",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 112,
+      "linea_id": 28,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 113,
+      "linea_id": 29,
+      "tipo_prueba": "Visual",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 114,
+      "linea_id": 29,
+      "tipo_prueba": "Hidrostática",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 115,
+      "linea_id": 29,
+      "tipo_prueba": "Aire 24h",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 116,
+      "linea_id": 29,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 117,
+      "linea_id": 30,
+      "tipo_prueba": "Visual",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 118,
+      "linea_id": 30,
+      "tipo_prueba": "Hidrostática",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 119,
+      "linea_id": 30,
+      "tipo_prueba": "Aire 24h",
+      "estado": null,
+      "fecha_inspeccion": null
+    },
+    {
+      "id": 120,
+      "linea_id": 30,
+      "tipo_prueba": "Disparo (Trip)",
+      "estado": null,
+      "fecha_inspeccion": null
+    }
+  ]
+}
