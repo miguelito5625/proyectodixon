@@ -19,9 +19,15 @@ Verifica si existe el archivo `supabase/config.toml` (o similar) ejecutando un c
 
 - **Si el comando funciona y el proyecto está vinculado:** Puedes pasar al Paso 2.
 
-## 2. Ejecutar los Cambios (PowerShell)
+## 2. Ejecutar los Cambios y Sincronizar (Modo Estricto)
 
-Dado que el entorno del usuario es Windows (PowerShell), inyecta el contenido del archivo SQL a Supabase utilizando el siguiente comando en la terminal:
+El objetivo de esta skill es que la base de datos coincida **exactamente** con lo que está definido en `extras/schema.sql` (ni más, ni menos). Dado que `schema.sql` suele usar solo `CREATE TABLE IF NOT EXISTS`, ejecutarlo directamente no borra las tablas eliminadas del archivo. Por lo tanto, debes seguir estos pasos:
+
+1. **Obtener tablas remotas:** Ejecuta `npx supabase db query "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'" --linked`
+2. **Comparar:** Compara la lista de tablas remotas devuelta por el comando con las tablas explícitamente definidas en `extras/schema.sql`.
+3. **Limpiar sobrantes:** Si encuentras tablas en la base remota que **no** están en el archivo `schema.sql`, elimínalas primero ejecutando:
+   `npx supabase db query "DROP TABLE IF EXISTS tabla1, tabla2 CASCADE;" --linked`
+4. **Aplicar el nuevo esquema:** Inyecta el contenido del archivo SQL a Supabase utilizando el siguiente comando en la terminal (PowerShell):
 
 ```powershell
 npx supabase db query --file extras/schema.sql --linked
