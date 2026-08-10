@@ -10,11 +10,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DataService } from '../core/services/data.service';
 import { Inspeccion, Linea, Zona } from '../core/models/data.models';
 import { Inject } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-date-picker-dialog',
@@ -139,6 +140,53 @@ export class InspectionDropdown {
 }
 
 @Component({
+  selector: 'app-linea-dialog',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  template: `
+    <h2 mat-dialog-title>{{ data?.linea?.id ? 'Editar' : 'Añadir' }} Línea a Zona {{data?.zonaId}}</h2>
+    <mat-dialog-content>
+      <form [formGroup]="form" class="dialog-form" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo (ej. Altas, Bajas)</mat-label>
+          <input matInput formControlName="tipo">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Permiso Específico</mat-label>
+          <input matInput formControlName="permiso_especifico">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Notas iniciales</mat-label>
+          <textarea matInput formControlName="notas" rows="3"></textarea>
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="save()">Guardar</button>
+    </mat-dialog-actions>
+  `
+})
+export class LineaDialog {
+  form: FormGroup;
+  constructor(
+    private fb: FormBuilder,
+    public dialogRef: MatDialogRef<LineaDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: { zonaId: number, linea: Linea | null }
+  ) {
+    this.form = this.fb.group({
+      zona_id: [data.zonaId],
+      tipo: [data.linea?.tipo || '', Validators.required],
+      permiso_especifico: [data.linea?.permiso_especifico || ''],
+      avance_fisico: [data.linea?.avance_fisico || false],
+      porcentaje_completado: [data.linea?.porcentaje_completado || 0],
+      notas: [data.linea?.notas || '']
+    });
+  }
+  save() { if (this.form.valid) this.dialogRef.close(this.form.value); }
+}
+
+@Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
@@ -209,10 +257,16 @@ export class InspectionDropdown {
         @for (zona of dataService.zonas(); track zona.id) {
           <mat-expansion-panel class="zona-panel">
             <mat-expansion-panel-header>
-              <mat-panel-title>
+              <mat-panel-title style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <strong>Zona {{ zona.numero_zona }} ({{ zona.nivel }})</strong>
               </mat-panel-title>
             </mat-expansion-panel-header>
+            
+            <div style="margin-bottom: 12px; display: flex; justify-content: flex-end;">
+              <button mat-button color="primary" (click)="openLineaDialog(zona.id)">
+                <mat-icon>add</mat-icon> Añadir Línea
+              </button>
+            </div>
 
             <div class="lineas-container">
               <table class="lineas-table">
@@ -227,6 +281,7 @@ export class InspectionDropdown {
                     <th>Aire 24h</th>
                     <th>Disparo (Trip)</th>
                     <th>Notas</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -266,11 +321,19 @@ export class InspectionDropdown {
                           <mat-icon>comment</mat-icon>
                         </button>
                       </td>
+                      <td>
+                        <button mat-icon-button color="primary" (click)="openLineaDialog(zona.id, linea)">
+                          <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button color="warn" (click)="deleteLinea(linea.id)">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </td>
                     </tr>
                   }
                   @if (getLineasForZona(zona.id).length === 0) {
                     <tr>
-                      <td colspan="9" class="text-center">No hay líneas registradas en esta zona.</td>
+                      <td colspan="10" class="text-center">No hay líneas registradas en esta zona.</td>
                     </tr>
                   }
                 </tbody>
@@ -376,6 +439,7 @@ export class InspectionDropdown {
 export class Dashboard {
   public dataService = inject(DataService);
   private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
 
   getLineasForZona(zonaId: number): Linea[] {
     return this.dataService.lineas().filter(l => l.zona_id === zonaId);
@@ -394,5 +458,31 @@ export class Dashboard {
       width: '400px',
       data: { notas: notas || 'No hay notas registradas para esta línea.' }
     });
+  }
+
+  openLineaDialog(zonaId: number, linea?: Linea) {
+    const dialogRef = this.dialog.open(LineaDialog, {
+      width: '400px',
+      data: { zonaId, linea: linea || null }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        if (linea) {
+          this.dataService.updateLinea(linea.id, result);
+          this.snackBar.open('Línea actualizada', 'Cerrar', { duration: 3000 });
+        } else {
+          this.dataService.addLinea(result);
+          this.snackBar.open('Línea creada (con sus 4 inspecciones base)', 'Cerrar', { duration: 3000 });
+        }
+      }
+    });
+  }
+
+  deleteLinea(id: number) {
+    if (confirm('Al eliminar esta línea se borrarán sus inspecciones asociadas. ¿Deseas continuar?')) {
+      this.dataService.deleteLinea(id);
+      this.snackBar.open('Línea eliminada', 'Cerrar', { duration: 3000 });
+    }
   }
 }

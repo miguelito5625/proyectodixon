@@ -1,19 +1,85 @@
-import { Component, computed, inject, ViewChild, EffectRef, effect } from '@angular/core';
+import { Component, computed, inject, ViewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { DataService } from '../core/services/data.service';
+import { Zona } from '../core/models/data.models';
+import { Inject } from '@angular/core';
 
-interface ZonaStat {
-  id: number;
-  numero_zona: number;
-  nivel: string;
+interface ZonaStat extends Zona {
   total_lineas: number;
   promedio_avance: number;
+}
+
+@Component({
+  selector: 'app-zona-dialog',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  template: `
+    <h2 mat-dialog-title>{{ data?.id ? 'Editar' : 'Crear' }} Zona</h2>
+    <mat-dialog-content>
+      <form [formGroup]="form" class="dialog-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Proyecto ID (Fijo por ahora = 1)</mat-label>
+          <input matInput formControlName="proyecto_id" type="number">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Número de Zona</mat-label>
+          <input matInput formControlName="numero_zona" type="number">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nivel</mat-label>
+          <input matInput formControlName="nivel">
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="save()">Guardar</button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    .dialog-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+      min-width: 300px;
+    }
+    .full-width {
+      width: 100%;
+    }
+  `]
+})
+export class ZonaDialog {
+  form: FormGroup;
+
+  constructor(
+    private fb: FormBuilder,
+    public dialogRef: MatDialogRef<ZonaDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: Zona | null
+  ) {
+    this.form = this.fb.group({
+      proyecto_id: [data?.proyecto_id || 1, Validators.required],
+      numero_zona: [data?.numero_zona || '', Validators.required],
+      nivel: [data?.nivel || '', Validators.required]
+    });
+  }
+
+  save() {
+    if (this.form.valid) {
+      this.dialogRef.close(this.form.value);
+    }
+  }
 }
 
 @Component({
@@ -26,12 +92,22 @@ interface ZonaStat {
     MatSortModule, 
     MatFormFieldModule, 
     MatInputModule,
-    MatCardModule
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    MatSnackBarModule
   ],
   template: `
     <div class="zonas-header">
-      <h1>Gestión de Zonas</h1>
-      <p>Vista general de las zonas del proyecto y su progreso consolidado.</p>
+      <div class="header-text">
+        <h1>Gestión de Zonas</h1>
+        <p>Catálogo de zonas y progreso consolidado.</p>
+      </div>
+      <button mat-flat-button color="primary" (click)="openDialog()">
+        <mat-icon>add</mat-icon>
+        Nueva Zona
+      </button>
     </div>
 
     <mat-card class="zonas-card">
@@ -69,12 +145,23 @@ interface ZonaStat {
               </td>
             </ng-container>
 
+            <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef> Acciones </th>
+              <td mat-cell *matCellDef="let row">
+                <button mat-icon-button color="primary" (click)="openDialog(row)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteZona(row.id)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-            <!-- Row shown when there is no matching data. -->
             <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell" colspan="4">No se encontraron zonas que coincidan con el filtro "{{input.value}}"</td>
+              <td class="mat-cell" colspan="5">No se encontraron zonas que coincidan con el filtro "{{input.value}}"</td>
             </tr>
           </table>
         </div>
@@ -86,6 +173,9 @@ interface ZonaStat {
   styles: [`
     .zonas-header {
       margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .zonas-header h1 {
       margin: 0;
@@ -134,8 +224,10 @@ interface ZonaStat {
 })
 export class ZonasComponent {
   public dataService = inject(DataService);
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
   
-  displayedColumns: string[] = ['numero_zona', 'nivel', 'total_lineas', 'promedio_avance'];
+  displayedColumns: string[] = ['numero_zona', 'nivel', 'total_lineas', 'promedio_avance', 'acciones'];
   dataSource: MatTableDataSource<ZonaStat>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -144,7 +236,6 @@ export class ZonasComponent {
   constructor() {
     this.dataSource = new MatTableDataSource<ZonaStat>([]);
     
-    // Create an effect to watch for signal changes and update the table
     effect(() => {
       const zonas = this.dataService.zonas();
       const lineas = this.dataService.lineas();
@@ -160,9 +251,7 @@ export class ZonasComponent {
         }
         
         return {
-          id: z.id,
-          numero_zona: z.numero_zona,
-          nivel: z.nivel,
+          ...z,
           total_lineas: totalLineas,
           promedio_avance: promedio
         };
@@ -183,6 +272,32 @@ export class ZonasComponent {
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
+    }
+  }
+
+  openDialog(zona?: Zona) {
+    const dialogRef = this.dialog.open(ZonaDialog, {
+      width: '400px',
+      data: zona || null
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        if (zona) {
+          this.dataService.updateZona(zona.id, result);
+          this.snackBar.open('Zona actualizada', 'Cerrar', { duration: 3000 });
+        } else {
+          this.dataService.addZona(result);
+          this.snackBar.open('Zona creada', 'Cerrar', { duration: 3000 });
+        }
+      }
+    });
+  }
+
+  deleteZona(id: number) {
+    if (confirm('Al eliminar esta zona también se borrarán todas sus líneas e inspecciones. ¿Estás seguro?')) {
+      this.dataService.deleteZona(id);
+      this.snackBar.open('Zona eliminada', 'Cerrar', { duration: 3000 });
     }
   }
 }
